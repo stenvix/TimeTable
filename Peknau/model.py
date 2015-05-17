@@ -12,6 +12,18 @@ class Group(db.Model):
     group_course = db.Column(db.Integer, nullable=False)
     specialty_id = db.Column(db.Integer, db.ForeignKey("specialty.id"))
 
+    @staticmethod
+    def get_course_groups(number):
+        return Group.query.filter_by(group_course=number)
+
+    @staticmethod
+    def get_group_by_number(number):
+        return Group.query.filter_by(group_number=number).first()
+
+    @staticmethod
+    def get_all_groups():
+        return Group.query.all()
+
 
 class Specialty(db.Model):
     __tablename__ = 'specialty'
@@ -27,6 +39,10 @@ class Subject(db.Model):
     lecturer_id = db.Column(db.Integer, db.ForeignKey("lecturer.id"))
     lecturer = db.relationship('Lecturer', backref='subjects')
 
+    @staticmethod
+    def get_subject_by_id(id):
+        return Subject.query.filter_by(id=id)
+
 
 class Lecturer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +55,10 @@ class Day(object):
         return cls.__name__.lower()
 
     id = db.Column(db.Integer, primary_key=True)
+
+    @declared_attr
+    def week(cls):
+        return db.Column(db.Integer, nullable=False)
 
     @declared_attr
     def group_id(cls):
@@ -76,22 +96,25 @@ class Day(object):
     def subject_one(cls):
         return db.relationship('Subject', foreign_keys=[cls.lesson_one])
 
+    @declared_attr
     def subject_two(cls):
         return db.relationship('Subject', foreign_keys=[cls.lesson_two])
 
     @declared_attr
     def subject_three(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_one])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_three])
 
+    @declared_attr
     def subject_four(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_two])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_four])
 
     @declared_attr
     def subject_five(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_one])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_five])
 
+    @declared_attr
     def subject_six(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_two])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_six])
 
 
 class Monday(Day, db.Model):

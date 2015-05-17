@@ -2,25 +2,73 @@
 /* No media query since this is the default in Bootstrap */
 
 /* Small devices (tablets, 768px and up) */
-@media (min-width: @screen-sm-min) {  }
+@media (min-width: @screen-sm-min) {
+}
 
 /* Medium devices (desktops, 992px and up) */
-@media (min-width: @screen-md-min) {  }
+@media (min-width: @screen-md-min) {
+}
 
 /* Large devices (large desktops, 1200px and up) */
-@media (min-width: @screen-lg-min) {  }
+@media (min-width: @screen-lg-min) {
+}
+
 table {
     text-align: center;
     width: 100%;
 }
 
 .table-hover {
-    
+
 }
 
 td {
     padding: 0.3em;
 }
-.panel-heading{
+
+.panel-heading {
     text-align: center;
+}
+
+.full_table {
+    padding: 0 0 0 10px !important;
+}
+
+.col-centered {
+    display: inline-block;
+    float: none;
+    /* reset the text-align */
+    text-align: left;
+    /* inline-block space fix */
+    margin-right: -4px;
+}
+
+.row-centered {
+    text-align: center;
+!important;
+    overflow: auto;
+}
+
+.table-primary thead {
+    background-color: #2780E3;
+    color: #ffffff;
+}
+
+.table-primary thead th {
+    text-align: center;
+    border: none !important;
+}
+
+.table-primary tbody tr td {
+    vertical-align: middle;
+}
+
+.table-primary thead tr th:first-child {
+    vertical-align: middle;
+    min-width: 2em;
+}
+
+.table-primary thead tr th {
+    vertical-align: middle;
+    min-width: 5em;
 }
