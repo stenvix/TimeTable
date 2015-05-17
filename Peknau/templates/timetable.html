@@ -1,79 +1,9 @@
 {% extends "base.html" %}
+{% block head %}
+
+    <title>Розклад занять ПЕК НАУ - групи {{ group.group_number }}-{{ group.specialty.long_form }}</title>
+{% endblock %}
 {% block content %}
-    <header></header>
-    <div>
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                            data-target="#bs-example-navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Розклад ПЕК НАУ</a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li><a href="#">Link</a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-expanded="false">Dropdown <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">One more separated link</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form class="navbar-form navbar-left" role="search">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Номер групи  ">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Пошук</button>
-                    </form>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Link</a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-expanded="false">Dropdown <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.navbar-collapse -->
-            </div>
-            <!-- /.container-fluid -->
-        </nav>
-    </div>
-
     <div class="container-fluid">
         <div class="row row-centered">
             <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
@@ -100,7 +30,10 @@
                             <td></td>
                         {% endif %}
                         {% if group.tuesday %}
-                            <td>{{ group.tuesday[0].subject_one.name }}</td>
+                            <td>{{ group.tuesday[0].subject_one.name }} </br>
+                                <small><strong>{{ group.tuesday[0].subject_one.lecturer.last_name }}
+                                {{ group.tuesday[0].subject_one.lecturer.first_name[0] }}.
+                                {{ group.tuesday[0].subject_one.lecturer.middle_name[0] }}. </strong></small> </td>
                         {% else %}
                             <td></td>
                         {% endif %}
@@ -161,7 +94,7 @@
                     </tr>
                     <tr>
                         <td>3</td>
-                        <td>10:00 <br>|<br> 11:20</td>
+                        <td>11:50 <br>|<br> 13:10</td>
                         {% if group.monday %}
                             <td>{{ group.monday[0].subject_three.name }}</td>
                         {% else %}
@@ -195,7 +128,7 @@
                     </tr>
                     <tr>
                         <td>4</td>
-                        <td>10:00 <br>|<br> 11:20</td>
+                        <td>13:20 <br>|<br> 14:40</td>
                         {% if group.monday %}
                             <td>{{ group.monday[0].subject_four.name }}</td>
                         {% else %}
@@ -229,7 +162,7 @@
                     </tr>
                     <tr>
                         <td>5</td>
-                        <td>10:00 <br>|<br> 11:20</td>
+                        <td>14:50 <br>|<br> 16:10</td>
                         {% if group.monday %}
                             <td>{{ group.monday[0].subject_five.name }}</td>
                         {% else %}

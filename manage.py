@@ -95,9 +95,11 @@ def initdb():
     db.session.add(Group(group_number=302, group_course=5, specialty_id=5))
     db.session.add(Group(group_number=450, group_course=5, specialty_id=5))
 
+    db.session.add(Lecturer(first_name=u"Наталія", middle_name=u"Анатоліївна", last_name=u"Рябчук"))
+
     db.session.add(Subject(name=u"Математичні методи дослідження операцій"))  # 1
     db.session.add(Subject(name=u"Інженерна та комп'ютерна графіка"))  # 2
-    db.session.add(Subject(name=u"Конструювання програмного забеспечення"))  # 3
+    db.session.add(Subject(name=u"Конструювання програмного забеспечення", lecturer_id=1))  # 3
     db.session.add(Subject(name=u"Людино-машинний інтерфейс"))  # 4
     db.session.add(Subject(name=u"Основи менеджменту і макретингу"))  # 5
     db.session.add(Subject(name=u"Веб-дизайн"))  # 6

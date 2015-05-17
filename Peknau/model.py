@@ -39,14 +39,11 @@ class Subject(db.Model):
     lecturer_id = db.Column(db.Integer, db.ForeignKey("lecturer.id"))
     lecturer = db.relationship('Lecturer', backref='subjects')
 
-    @staticmethod
-    def get_subject_by_id(id):
-        return Subject.query.filter_by(id=id)
-
-
 class Lecturer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    initials = db.Column(db.UnicodeText, nullable=False)
+    first_name = db.Column(db.String,nullable=False)
+    middle_name = db.Column(db.String)
+    last_name = db.Column(db.String,nullable=False)
 
 
 class Day(object):
