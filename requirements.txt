@@ -12,4 +12,3 @@ Flask-SQLAlchemy
 # ----------------------
 gunicorn
 Flask-Login
-Flask-Restless
