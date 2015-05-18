@@ -45,8 +45,7 @@ td {
 
 .row-centered {
     text-align: center;
-!important;
-    overflow: auto;
+
 }
 
 .table-primary thead {
