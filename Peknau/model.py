@@ -32,6 +32,22 @@ class Specialty(db.Model):
     long_form = db.Column(db.Unicode, nullable=False)
     group = db.relationship('Group', backref='specialty')
 
+    @staticmethod
+    def get_all_specialty():
+        return Specialty.query.all()
+
+    @staticmethod
+    def get_by_id(specialty_id):
+        return Specialty.query.filter_by(id=specialty_id).first()
+
+    @staticmethod
+    def update(specialty):
+        db.session.add(specialty)
+
+    @staticmethod
+    def delete(specialty_id):
+        db.session.delete(Specialty.get_by_id(specialty_id))
+        db.session.commit()
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -6,7 +6,7 @@ from flask.ext.script import Manager, prompt_bool, Command, Option
 # from Bookmarks.model import User
 from sqlalchemy import create_engine
 
-app.debug = True
+
 
 
 class GunicornServer(Command):

@@ -1,0 +1,24 @@
+{% extends 'admin.html' %}
+{% block container %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">Спеціальності</div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th class="text-center" style="width: 15em">Скорочена форма</th>
+                <th class="text-center">Повна форма</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in all %}
+                <tr>
+                    <td>{{ item.short_form }}</td>
+                    <td>{{ item.long_form }}</td>
+                    <td><button class="btn-primary spec_del" spec_id="{{ item.id }}">Редагувати</button></td>
+                    <td><a href="{{ url_for('specialty_delete',specialty_id=item.id) }}"> Видалити</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
