@@ -1,5 +1,3 @@
-from flask.ext.debugtoolbar import DebugToolbarExtension
-
 __author__ = 'gareth'
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
