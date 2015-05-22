@@ -21,11 +21,12 @@ $('#successModal').on('show.bs.modal', function (event) {
 })
 
 jQuery(document).ready(function () {
-    $(".btn-primary").click(function () {
-        alert($(this).attr('spec_id'));
+    $("button[id^='specDelete']").click(function () {
+        //$(".btn-primary ").click(function () {
+        //alert($(this).attr('spec_id'));
 
         $.ajax({
-            url: '/admin/specialty/delete',
+            url: '/admin/specialty',
             type: "DELETE",
             data: {
                 "id": $(this).attr('spec_id')
@@ -37,3 +38,18 @@ jQuery(document).ready(function () {
         })
     });
 });
+jQuery(document).ready(function () {
+    $(".modal-footer #modalClose").click(function () {
+        location.reload();
+    })
+});
+////Search button
+//$(document).ready(function () {
+//    $("#search").click(function () {
+//        $.post("/search", {type: $('#search_select option:selected').val(), text: $('#search_input').val()})
+//            .done(function (data) {
+//                alert("Data Loaded: " + data);
+//                window.location.replace(data)
+//            });
+//    });
+//});

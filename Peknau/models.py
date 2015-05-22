@@ -17,8 +17,20 @@ class Group(db.Model):
         return Group.query.filter_by(group_course=number)
 
     @staticmethod
+    def get_by_specialty(specialty):
+        return Group.query.filter_by(specialty.short_form==specialty)
+
+    @staticmethod
+    def get_by_specialty_like(specialty):
+        return Group.query.join(Specialty).filter((Specialty.short_form.like('%'+specialty.upper()+'%')))
+
+    @staticmethod
     def get_group_by_number(number):
-        return Group.query.filter_by(group_number=number).first()
+        return Group.query.filter_by(group_number = number).first()
+
+    @staticmethod
+    def get_group_by_number_like(number):
+            return Group.query.filter(Group.group_number.like('%'+str(number)+'%'))
 
     @staticmethod
     def get_all_groups():
@@ -48,6 +60,10 @@ class Specialty(db.Model):
     def delete(specialty_id):
         db.session.delete(Specialty.get_by_id(specialty_id))
         db.session.commit()
+
+    @staticmethod
+    def count():
+        return  Specialty.query.count()
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)

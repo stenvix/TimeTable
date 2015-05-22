@@ -8,11 +8,13 @@
                     <div class="panel-body">
                         <table class="table-responsive table-hover table-striped table-bordered">
                             <tbody>
-                            {% if group %}
-                                {% for g in group %}
+                            {% if all_groups %}
+                                {% for g in all_groups %}
                                     {% if g.group_course==1 %}
                                         <tr>
-                                            <td><a title="{{g.specialty.long_form}}" href="{{ url_for('group_timetable',group_number=g.group_number, week=current_week) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a></td>
+                                            <td><a title="{{ g.specialty.long_form }}"
+                                                   href="{{ url_for('group_timetable',group_number=g.group_number ) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a>
+                                            </td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -32,11 +34,13 @@
                     <div class="panel-body">
                         <table class="table-responsive table-hover table-striped table-bordered">
                             <tbody>
-                            {% if group %}
+                            {% if all_groups %}
                                 {% for g in all_groups %}
                                     {% if g.group_course==2 %}
                                         <tr>
-                                            <td><a title="{{g.specialty.long_form}}" href="{{ url_for('group_timetable',group_number=g.group_number, week=current_week) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a></td>
+                                            <td><a title="{{ g.specialty.long_form }}"
+                                                   href="{{ url_for('group_timetable',group_number=g.group_number ) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a>
+                                            </td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -58,11 +62,13 @@
                     <div class="panel-body">
                         <table class="table-responsive table-hover table-striped table-bordered">
                             <tbody>
-                            {% if group %}
+                            {% if all_groups %}
                                 {% for g in all_groups %}
                                     {% if g.group_course==3 %}
                                         <tr>
-                                            <td><a title="{{g.specialty.long_form}}" href="{{ url_for('group_timetable',group_number=g.group_number, week=current_week) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a></td>
+                                            <td><a title="{{ g.specialty.long_form }}"
+                                                   href="{{ url_for('group_timetable',group_number=g.group_number ) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a>
+                                            </td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -82,12 +88,13 @@
                     <div class="panel-body">
                         <table class="table-responsive table-hover table-striped table-bordered">
                             <tbody>
-                            {% if group %}
+                            {% if all_groups %}
                                 {% for g in all_groups %}
                                     {% if g.group_course==4 %}
                                         <tr>
                                             <td>
-                                                <a title="{{g.specialty.long_form}}" href="{{ url_for('group_timetable',group_number=g.group_number, week=current_week) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a>
+                                                <a title="{{ g.specialty.long_form }}"
+                                                   href="{{ url_for('group_timetable',group_number=g.group_number ) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a>
                                             </td>
                                         </tr>
                                     {% endif %}
@@ -110,11 +117,13 @@
                     <div class="panel-body">
                         <table class="table-responsive table-hover table-striped table-bordered">
                             <tbody>
-                            {% if group %}
+                            {% if all_groups %}
                                 {% for g in all_groups %}
                                     {% if g.group_course==5 %}
                                         <tr>
-                                            <td><a title="{{g.specialty.long_form}}" href="{{ url_for('group_timetable',group_number=g.group_number, week=current_week) }}"> {{ g.group_number }}-{{ g.specialty.short_form }}</a></td>
+                                            <td><a title="{{ g.specialty.long_form }}"
+                                                   href="{{ url_for('group_timetable',group_number=g.group_number ) }}"> {{ g.group_number }}-Б{{ g.specialty.short_form }}</a>
+                                            </td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}

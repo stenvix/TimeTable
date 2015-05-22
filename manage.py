@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'gareth'
 from Peknau import app, db
-from Peknau.model import *
+from Peknau.models import *
 from flask.ext.script import Manager, prompt_bool, Command, Option
 # from Bookmarks.model import User
 from sqlalchemy import create_engine

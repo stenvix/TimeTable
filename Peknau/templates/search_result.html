@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row row-centered">
+            <div class="col-lg-7 col-md-10 col-sm-12 col-xs-12 col-centered">
+                {#    <div class="panel panel-primary">#}
+                {#        <div class="panel-heading">Результати пошуку</div>#}
+                {#        <div class="panel-body">123</div>#}
+                <table class="table table-bordered table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Група</th>
+                        <th>Курс</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data %}
+                        <tr>
+                            {#                        <td rowspan="1">#}
+                            {##}
+                            {#                            {{ item.specialty.long_form }}#}
+                            {#                        </td>#}
+                            <td>
+                                <a href="{{ url_for('group_timetable',group_number = item.group_number) }}"> {{ item.group_number }}-{{ item.specialty.short_form }} </a>
+                            </td>
+                            <td>
+                                {{ item.group_course }} курс
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

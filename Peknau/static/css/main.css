@@ -1,6 +1,9 @@
 /* Extra small devices (phones, less than 768px) */
 /* No media query since this is the default in Bootstrap */
 
+@media (min-width: @screen-sx-min) {
+
+}
 /* Small devices (tablets, 768px and up) */
 @media (min-width: @screen-sm-min) {
 }
@@ -18,20 +21,12 @@ table {
     width: 100%;
 }
 
-.table-hover {
-
-}
-
 td {
     padding: 0.3em;
 }
 
 .panel-heading {
     text-align: center;
-}
-
-.full_table {
-    padding: 0 0 0 10px !important;
 }
 
 .col-centered {
@@ -48,17 +43,17 @@ td {
 
 }
 
-.table-primary thead {
+.table thead {
     background-color: #2780E3;
     color: #ffffff;
 }
 
-.table-primary thead th {
+.table thead th {
     text-align: center;
     border: none !important;
 }
 
-.table-primary tbody tr td {
+.table tbody tr td {
     vertical-align: middle;
 }
 
