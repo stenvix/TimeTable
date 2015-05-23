@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'timetable_marcos.html' as macros with context%}
 {% block head %}
 
     <title>Розклад занять ПЕК НАУ - групи {{ group.group_number }}-{{ group.specialty.long_form }}</title>
@@ -6,14 +7,17 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row row-centered">
-<div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
-                      <ul class="nav nav-pills nav-justified" style="margin-bottom: 10px;">
-  <li role="presentation" {% if week==1 %} class="active" {% endif %}><a href="{{ url_for('group_timetable',group_number=group.group_number,week='1') }}">Перший тиждень</a></li>
-  <li role="presentation" {% if week==2 %} class="active" {% endif %}><a href="{{ url_for('group_timetable',group_number=group.group_number,week='2') }}">Другий тиждень</a></li>
-</ul>
-</div>
             <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
-
+                <ul class="nav nav-pills nav-justified" style="margin-bottom: 10px;">
+                    <li role="presentation" {% if week==1 %} class="active" {% endif %}><a
+                            href="{{ url_for('group_timetable',group_number=group.group_number,week='1') }}">Перший
+                        тиждень</a></li>
+                    <li role="presentation" {% if week==2 %} class="active" {% endif %}><a
+                            href="{{ url_for('group_timetable',group_number=group.group_number,week='2') }}">Другий
+                        тиждень</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
                 <table class="table-responsive table-condensed table-bordered table table-primary">
                     <thead>
                     <tr>
@@ -28,179 +32,13 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for num in range(6) %}
                     <tr>
-                        <td>1</td>
-                        <td>8:30 <br>|<br> 09:50</td>
-                        {% if group.monday and group.monday[0].week==week%}
-                            <td>{{ group.monday[0].subject_one.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.tuesday and group.tuesday[0].week==week%}
-                            <td>{{ group.tuesday[0].subject_one.name }} </br>
-                                <small><strong>{{ group.tuesday[0].subject_one.lecturer.last_name }}
-                                {{ group.tuesday[0].subject_one.lecturer.first_name[0] }}.
-                                {{ group.tuesday[0].subject_one.lecturer.middle_name[0] }}. </strong></small> </td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.wednesday and group.wednesday[0].week==week%}
-                            <td>{{ group.wednesday[0].subject_one.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.thursday and group.thursday[0].week==week%}
-                            <td>{{ group.thursday[0].subject_one.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.friday and group.friday[0].week==week%}
-                            <td>{{ group.friday[0].subject_one.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.saturday and group.saturday[0].week==week%}
-                            <td>{{ group.saturday[0].subject_one.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
+
+                        {{ macros.table(num) }}
+
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>10:00 <br>|<br> 11:20</td>
-                        {% if group.monday %}
-                            <td>{{ group.monday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.tuesday %}
-                            <td>{{ group.tuesday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.wednesday %}
-                            <td>{{ group.wednesday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.thursday %}
-                            <td>{{ group.thursday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.friday %}
-                            <td>{{ group.friday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.saturday %}
-                            <td>{{ group.saturday[0].subject_two.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>11:50 <br>|<br> 13:10</td>
-                        {% if group.monday %}
-                            <td>{{ group.monday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.tuesday %}
-                            <td>{{ group.tuesday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.wednesday %}
-                            <td>{{ group.wednesday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.thursday %}
-                            <td>{{ group.thursday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.friday %}
-                            <td>{{ group.friday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.saturday %}
-                            <td>{{ group.saturday[0].subject_three.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>13:20 <br>|<br> 14:40</td>
-                        {% if group.monday %}
-                            <td>{{ group.monday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.tuesday %}
-                            <td>{{ group.tuesday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.wednesday %}
-                            <td>{{ group.wednesday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.thursday %}
-                            <td>{{ group.thursday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.friday %}
-                            <td>{{ group.friday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.saturday %}
-                            <td>{{ group.saturday[0].subject_four.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>14:50 <br>|<br> 16:10</td>
-                        {% if group.monday %}
-                            <td>{{ group.monday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.tuesday %}
-                            <td>{{ group.tuesday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.wednesday %}
-                            <td>{{ group.wednesday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.thursday %}
-                            <td>{{ group.thursday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.friday %}
-                            <td>{{ group.friday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                        {% if group.saturday %}
-                            <td>{{ group.saturday[0].subject_five.name }}</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

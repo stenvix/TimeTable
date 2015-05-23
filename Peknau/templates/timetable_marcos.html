@@ -1,0 +1,55 @@
+{% macro table(subject_number) %}
+    <tr>
+        {% if subject_number > 0 and subject_number < 7 %}
+            <td>{{ subject_number }}</td>
+            {% if subject_number==1 %}
+                <td>8:30 <br>|<br> 09:50</td>
+                {{ day_subject(subject_number) }}
+            {% endif %}
+            {% if subject_number==2 %}
+                <td>10:00 <br>|<br> 11:20</td>
+                {{ day_subject(subject_number) }}
+            {% endif %}
+            {% if subject_number==3 %}
+                <td>11:50 <br>|<br> 13:10</td>
+                {{ day_subject(subject_number) }}
+            {% endif %}
+            {% if subject_number==4 %}
+                <td>13:20 <br>|<br> 14:40</td>
+                {{ day_subject(subject_number) }}
+            {% endif %}
+            {% if subject_number==5 %}
+                <td>14:50 <br>|<br> 16:10</td>
+                {{ day_subject(subject_number) }}
+            {% endif %}
+        {% endif %}
+    </tr>
+{% endmacro %}
+
+{% macro day_subject(subject_number) %}
+    {% set days = ['monday','tuesday','wednesday','thursday','friday','saturday'] %}
+    {% set subjects = ['subject_one','subject_two','subject_three','subject_four','subject_five','subject_six'] %}
+
+    {% for i in days %}
+    {% if group[i]!=[] %}
+
+        {% for item in group[i] %}
+            {% if item and item.week==week%}
+                {% if item[subjects[subject_number - 1]]!=None %}
+                    <td>{{ item[subjects[subject_number - 1]].title }} </br>
+                        <small><strong>{{ item[subjects[subject_number - 1]].lecturer.last_name }}
+                            {{ item[subjects[subject_number - 1]].lecturer.first_name[0] }}.
+                            {{ item[subjects[subject_number - 1]].lecturer.middle_name[0] }}.
+                        </strong></small>
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        <td></td>
+        {% endif %}
+    {% endfor %}
+
+{% endmacro %}

@@ -67,7 +67,7 @@ class Specialty(db.Model):
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.UnicodeText, nullable=False)
+    title = db.Column(db.UnicodeText, nullable=False)
     lecturer_id = db.Column(db.Integer, db.ForeignKey("lecturer.id"))
     lecturer = db.relationship('Lecturer', backref='subjects')
 
