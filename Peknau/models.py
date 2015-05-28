@@ -1,8 +1,56 @@
 __author__ = 'Stepanov Valentin'
 # Import
-from Peknau import db
+from Peknau import db, login_manager
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import or_, func
+from datetime import datetime
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, index=True)
+    password = db.Column(db.String(10))
+    email = db.Column(db.String(50), unique=True, index=True)
+    registered_on = db.Column(db.DateTime)
+
+    def __init__(self, username, password, email):
+        self.username = username
+        self.password = password
+        self.email = email
+        self.registered_on = datetime.utcnow()
+
+    @staticmethod
+    def add(username,password,email):
+        db.session.add(User(username=username,password=password,email=email))
+        db.commit()
+
+    @staticmethod
+    def validate(username,password):
+        return User.query.filter_by(username=username,password=password).first()
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+
+    def is_anonymous(self):
+        return False
+
+
+    def get_id(self):
+        return unicode(self.id)
+
+
+    def __repr__(self):
+        return '<User %r>' % (self.username)
+
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
 
 class Group(db.Model):
@@ -18,23 +66,28 @@ class Group(db.Model):
 
     @staticmethod
     def get_by_specialty(specialty):
-        return Group.query.filter_by(specialty.short_form==specialty)
+        return Group.query.filter_by(specialty.short_form == specialty)
 
     @staticmethod
     def get_by_specialty_like(specialty):
-        return Group.query.join(Specialty).filter((Specialty.short_form.like('%'+specialty.upper()+'%')))
+        return Group.query.join(Specialty).filter((Specialty.short_form.like('%' + specialty.upper() + '%')))
 
     @staticmethod
     def get_group_by_number(number):
-        return Group.query.filter_by(group_number = number).first()
+        return Group.query.filter_by(group_number=number).first()
 
     @staticmethod
     def get_group_by_number_like(number):
-            return Group.query.filter(Group.group_number.like('%'+str(number)+'%'))
+        return Group.query.filter(Group.group_number.like('%' + str(number) + '%'))
 
     @staticmethod
     def get_all_groups():
         return Group.query.all()
+
+    @staticmethod
+    def get_by_number_and_specialty(number, specialty):
+        return Group.query.join(Specialty).filter(Group.group_number.like('%' + number + '%'),
+                                                  Specialty.short_form.like('%' + specialty.upper() + '%'))
 
 
 class Specialty(db.Model):
@@ -63,7 +116,8 @@ class Specialty(db.Model):
 
     @staticmethod
     def count():
-        return  Specialty.query.count()
+        return Specialty.query.count()
+
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,11 +125,22 @@ class Subject(db.Model):
     lecturer_id = db.Column(db.Integer, db.ForeignKey("lecturer.id"))
     lecturer = db.relationship('Lecturer', backref='subjects')
 
+    @staticmethod
+    def get_by_title(title):
+        return Subject.query.filter_by(title=title).first()
+
+
 class Lecturer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String,nullable=False)
+    first_name = db.Column(db.String, nullable=False)
     middle_name = db.Column(db.String)
-    last_name = db.Column(db.String,nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+
+    @staticmethod
+    def get_by_name(name):
+        return Lecturer.query.filter(or_(func.lower(Lecturer.first_name).like('%' + name.capitalize() + '%'),
+                                         func.lower(Lecturer.last_name).like('%' + name.capitalize() + '%'),
+                                         func.lower(Lecturer.middle_name).like('%' + name.capitalize() + '%')))
 
 
 class Day(object):
@@ -123,27 +188,27 @@ class Day(object):
 
     @declared_attr
     def subject_one(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_one])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_one], backref=cls.__name__.lower() + u'_one')
 
     @declared_attr
     def subject_two(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_two])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_two], backref=cls.__name__.lower() + u'_two')
 
     @declared_attr
     def subject_three(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_three])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_three], backref=cls.__name__.lower() + u'_three')
 
     @declared_attr
     def subject_four(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_four])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_four], backref=cls.__name__.lower() + u'_four')
 
     @declared_attr
     def subject_five(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_five])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_five], backref=cls.__name__.lower() + u'_five')
 
     @declared_attr
     def subject_six(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_six])
+        return db.relationship('Subject', foreign_keys=[cls.lesson_six], backref=cls.__name__.lower() + u'_six')
 
 
 class Monday(Day, db.Model):
