@@ -5,50 +5,19 @@
         <div class="row ">
         <div class="col-lg-3">
         <div class="panel panel-default panel-primary">
-        <div class="panel-heading">Групи</div>
-        {#                                        <div class="panel-body">#}
-        {#                        <div class="row">#}
-        {#                            <select class="form-control">#}
-        {#                                <option>1</option>#}
-        {#                                <option>2</option>#}
-        {#                                <option>3</option>#}
-        {#                                <option>4</option>#}
-        {#                                <option>5</option>#}
-        {#                            </select>#}
-        {#                            <h5>Група</h5>#}
-        {#                            <select class="form-control">#}
-        {#                                <option>1</option>#}
-        {#                                <option>2</option>#}
-        {#                                <option>3</option>#}
-        {#                                <option>4</option>#}
-        {#                                <option>5</option>#}
-        {#                            </select>#}
-        {#                        </div>#}
-
-
+        <div class="panel-heading">Керування</div>
         <ul class="list-group">
+            <li class="list-group-item"><a href="#">Заміни</a></li>
+            <li class="list-group-item"><a href="#">Групи</a></li>
+            <li class="list-group-item"><a href="#">Викладачі</a></li>
             <li class="list-group-item"><a href="{{ url_for('admin_specialty') }}"> Спеціальності</a></li>
-            <li class="list-group-item">Dapibus ac facilisis in</li>
-            <li class="list-group-item">Morbi leo risus</li>
-            <li class="list-group-item">Porta ac consectetur ac</li>
-            <li class="list-group-item">Vestibulum at eros</li>
+            <li class="list-group-item"><a href="#">Предмети</a></li>
         </ul>
     {% endblock %}
-
-{#                                           <div class="btn-group btn-group-vertical" role="group" aria-label="..." style="width: 100%">#}
-{#  <button type="button" class="btn ">Спеціальності</button>#}
-{#  <button type="button" class="btn ">Другий курс</button>#}
-{#  <button type="button" class="btn ">Третій курс</button>#}
-{#  <button type="button" class="btn ">Четвертий курс</button>#}
-{#  <button type="button" class="btn ">Бакалаврат</button>#}
-{#</div>#}
-{#                                            </div>#}
-
 </div>
 </div>
 <div class="col-lg-9">
     {% block container %}
-
     {% endblock %}
 </div>
 </div>
