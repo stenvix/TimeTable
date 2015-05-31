@@ -29,20 +29,22 @@ jQuery(document).ready(function () {
             url: '/admin/specialty',
             type: "DELETE",
             data: {
-                "id": $(this).attr('spec_id')
+                "id": $(this).attr('spec_id'),
+                "next": window.location.href
             },
             success: function (result) {
-                $("#modalSuccess").modal('show');
-                $("#modalSuccess").find('.modal-body').text(result);
+                //$("#modalSuccess").modal('show');
+                //$("#modalSuccess").find('.modal-body').text(result);
+location.reload();
             }
         })
     });
 });
-jQuery(document).ready(function () {
-    $(".modal-footer #modalClose").click(function () {
-        location.reload();
-    })
-});
+//jQuery(document).ready(function () {
+//    $(".modal-footer #modalClose").click(function () {
+//        location.reload();
+//    })
+//});
 ////Search button
 //$(document).ready(function () {
 //    $("#search").click(function () {

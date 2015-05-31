@@ -98,7 +98,7 @@ def initdb():
     db.session.add(Lecturer(first_name=u"Наталія", middle_name=u"Анатоліївна", last_name=u"Рябчук")) # 1
     db.session.add(Lecturer(first_name=u'Олег',middle_name=u'Львович',last_name=u'Лещинський')) # 2
     db.session.add(Lecturer(first_name=u'Олександр',middle_name=u'Олексійович',last_name=u'Юзюк'))# 3
-    db.session.add(Lecturer(first_name=u'Олександр',middle_name=u'Олексійович',last_name=u'Удовенко')) # 4
+    db.session.add(Lecturer(first_name=u'FIND',middle_name=u'FIND',last_name=u'Удовенко')) # 4
     db.session.add(Lecturer(first_name=u'Павел',middle_name=u'Юрійович',last_name=u'Родіонов')) # 5
     db.session.add(Lecturer(first_name=u'Анна',middle_name=u'Василівна',last_name=u'Селезень')) # 6
     db.session.add(Lecturer(first_name=u'Оксана',middle_name=u'Петрівна',last_name=u'Дуксенко')) # 7

@@ -1,0 +1,28 @@
+{% extends 'admin.html' %}
+{% from 'marcos.html' import render_field %}
+{% block container %}
+
+    {% if type == 'specialty' %}
+        <div class="panel panel-primary">
+        <div class="panel-heading">Редагувати</div>
+            <div class="panel-body">
+        <form method="post" action="{{ url_for('admin_update',what = type,id = id) }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+
+        {{ render_field(form.long_form)}}
+
+        {{ render_field(form.short_form) }}
+               <div class="col-lg-4 ">
+
+                   <a href="{{ url_for('admin_specialty') }}" ><button class="btn btn-group-justified" type="button">Відмінити</button></a>
+                    <input type=hidden value="{{ next or '' }}" name=next>
+                </div>
+                <div class="form-group col-lg-8">
+        {{ form.submit( class="btn btn-group-justified btn-primary") }}
+</div>
+        </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

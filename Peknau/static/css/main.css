@@ -40,7 +40,6 @@ td {
 
 .row-centered {
     text-align: center;
-
 }
 
 .table thead {
@@ -65,4 +64,12 @@ td {
 .table-primary thead tr th {
     vertical-align: middle;
     min-width: 5em;
+}
+.btn-update{
+    background-color: #27afe3;
+    color: #ffffff;
+
+}
+.btn-slim{
+    padding: 0.5em;
 }

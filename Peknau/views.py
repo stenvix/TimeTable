@@ -6,9 +6,9 @@ import datetime
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g
 from models import Group, Specialty, Subject, Lecturer, User
-from forms import SearchForm, LoginForm
+from forms import SearchForm, LoginForm, SpecialtyForm
 from flask.ext.login import login_user, login_required, logout_user
-
+from urlparse import urlparse, urljoin
 
 def get_week():
     start = datetime.date(datetime.date.today().year - 1, 9, 1);
@@ -20,6 +20,24 @@ def get_week():
     else:
         return 2
 
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+def get_redirect_target():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return target
+
+def redirect_back(endpoint, **values):
+    target = request.form['next']
+    if not target or not is_safe_url(target):
+        target = url_for(endpoint, **values)
+    return redirect(target)
 
 @app.before_request
 def before_request():
@@ -41,7 +59,7 @@ def login():
 
         if user:
             login_user(user)
-            if request.form['next']!='':
+            if request.form['next'] != '':
                 return redirect(request.form['next'])
             else:
                 return redirect(url_for('admin'))
@@ -74,17 +92,46 @@ def admin():
     return render_template('admin.html')
 
 
-@app.route('/admin/specialty', methods=['POST', 'GET', 'DELETE'])
+@app.route('/admin/update/<string:what>/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_update(what, id):
+    if what == 'specialty':
+        form = SpecialtyForm()
+        sp = Specialty.get_by_id(id)
+        if form.validate_on_submit():
+            sp.long_form = form.long_form.data
+            sp.short_form = form.short_form.data
+            Specialty.update(sp)
+            flash(u'Спеціальність успішно оновлено!')
+            return redirect_back('admin_specialty')
+
+        else:
+            form.long_form.data = sp.long_form
+            form.short_form.data = sp.short_form
+            next = get_redirect_target()
+            return render_template('admin_update.html', form=form, type=what,id = id,next = next)
+
+
+@app.route('/admin/specialty', methods=['GET', 'DELETE','POST'])
 @login_required
 def admin_specialty():
-    if request.method == 'GET':
-        return render_template('specialty.html', all=Specialty.get_all_specialty())
-    elif request.method == 'DELETE':
+    form = SpecialtyForm()
+    if request.method == 'DELETE':
         id = request.form['id']
         Specialty.delete(id)
-        return u'Спеціальність успішно видалено!'
-    return 'Помилка'
+        flash(u'Спеціальність успішно видалено!')
+        return 'Спеціальність успішно видалено!'
+    elif form.validate_on_submit():
+        Specialty.add(form.short_form.data,form.long_form.data)
+        flash(u'Спеціальність успішно додано')
+        return redirect_back('admin_specialty')
+    return render_template('admin_specialty.html', data=Specialty.get_all(),form = form)
 
+@app.route('/admin/lecturer',methods=['GET','DELETE'])
+@login_required
+def admin_lecturer():
+    if request.method=='GET':
+        return render_template('admin_lecturer.html', data = Lecturer.get_all())
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -94,27 +141,29 @@ def search():
             text = unicode(g.search_form.text.data)
             if n == 'group':
                 if text.isdigit():
-                    return render_template("search_result.html", type=n,
+                    return render_template('search_result.html', type=n,
                                            data=Group.get_group_by_number_like(int(text)),
                                            count=Specialty.count() + 1)
                 elif text.isalpha():
-                    return render_template("search_result.html", type=n, data=Group.get_by_specialty_like(text),
+                    return render_template('search_result.html', type=n, data=Group.get_by_specialty_like(text),
                                            count=Specialty.count() + 1)
                 else:
-                    arr = text.split(" ")
-                    if arr[0].isdigit():
-                        return render_template("search_result.html", type=n,
-                                               data=Group.get_by_number_and_specialty(arr[0], arr[1]),
-                                               count=Specialty.count() + 1)
-                    else:
-                        return render_template("search_result.html", type=n,
-                                               data=Group.get_by_number_and_specialty(arr[1], arr[0]),
-                                               count=Specialty.count() + 1)
+                    if text.find(' ') != -1:
+                        arr = text.split(' ')
+                        if arr[0].isdigit():
+                            return render_template('search_result.html', type=n,
+                                                   data=Group.get_by_number_and_specialty(arr[0], arr[1]),
+                                                   count=Specialty.count() + 1)
+                        else:
+                            return render_template('search_result.html', type=n,
+                                                   data=Group.get_by_number_and_specialty(arr[1], arr[0]),
+                                                   count=Specialty.count() + 1)
             elif n == 'lecturer':
                 if text.isalpha():
-                    return render_template("search_result.html", type=n, data=Lecturer.get_by_name(text))
+                    return render_template('search_result.html', type=n, data=Lecturer.get_by_name(text))
             elif n == 'subject':
-                pass
+                if text.isalnum():
+                    return render_template('search_result.html', type=n, data=Subject.get_by_substring(text), text=text)
             print(g.search_form.text.data)
             return redirect(url_for('index'))
         return redirect(url_for('group_timetable', group_number=427, week=get_week()))

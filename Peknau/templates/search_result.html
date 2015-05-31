@@ -10,54 +10,59 @@
                 <table class="table table-bordered table-condensed">
                     <thead>
                     <tr>
-                    {% if data.count() > 0  %}
-{#                        {% set lol =  data.filter_by(group_course='4') %}#}
-{#                        {% for l in lol %}#}
-{#                            {{ l.group_number }}#}
-{#                        {% endfor %}#}
-                        {% if type=='group'%}
-{#                            <th>Спеціальність</th>#}
-                            <th>Група</th>
-                            <th>Курс</th>
-                        {% endif %}
-                        {% if type=='lecturer' %}
-                            <td>Викладач</td>
-                            <td>Предмет</td>
-                        {% endif %}
-                    </tr>
 
-                    </thead>
-                    <tbody>
-
-                    {% for item in data %}
-                        <tr>
+                        {% if data|is_list and data|length > 0%}
                             {% if type=='group' %}
-{#                                <td>{{ item.specialty.long_form }}</td>#}
-                                <td>
-                                    <a title="{{ item.specialty.long_form }}"
-                                       href="{{ url_for('group_timetable',group_number = item.group_number) }}"> {{ item.group_number }}-{{ item.specialty.short_form }} </a>
-                                </td>
-                                <td>
-                                    {{ item.group_course }} курс
-                                </td>
+                                {#                            <th>Спеціальність</th>#}
+                                <th>Група</th>
+                                <th>Курс</th>
                             {% endif %}
                             {% if type=='lecturer' %}
-                                {% set con = item.subjects|length + 1 %}
-                                <td rowspan="{{ con }}">{{ item.last_name }} {{ item.first_name }} {{ item.middle_name }}</td>
-                                </tr>
-                                {% for subject in item.subjects %}
-                                    <tr>
-                                        <td>
-                                            {{ subject.title }} </td>
-                                    </tr>
-                                {% endfor %}
+                                <td>Викладач</td>
+                                <td>Предмет</td>
                             {% endif %}
-                    {% endfor %}
+                            {% if type=='subject' %}
+                                <td>Предмет</td>
+                                <td>Викладач</td>
+                            {% endif %}
+                            </tr>
+
+                            </thead>
+                            <tbody>
+
+                            {% for item in data %}
+                                <tr>
+                                    {% if type=='group' %}
+                                        {#                                <td>{{ item.specialty.long_form }}</td>#}
+                                        <td>
+                                            <a title="{{ item.specialty.long_form }}"
+                                               href="{{ url_for('group_timetable',group_number = item.group_number) }}"> {{ item.group_number }}-{{ item.specialty.short_form }} </a>
+                                        </td>
+                                        <td>
+                                            {{ item.group_course }} курс
+                                        </td>
+                                    {% endif %}
+                                    {% if type=='lecturer' %}
+                                        {% set con = item.subjects|length + 1 %}
+                                        <td rowspan="{{ con }}">{{ item.last_name }} {{ item.first_name }} {{ item.middle_name }}</td>
+                                        </tr>
+                                        {% for subject in item.subjects %}
+                                            <tr>
+                                                <td>
+                                                    {{ subject.title }} </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% if type=='subject' %}
+                                    <td>{{ item.title }}</td>
+                                    <td>{{ item.lecturer.last_name }}</td>
+                                {% endif %}
+                            {% endfor %}
 
                         {% else %}
-                        <h1 class="text-center">Дані не знайдено</h1>
-                    {% endif %}
-                    </tbody>
+                            <h1 class="text-center">Дані не знайдено</h1>
+                        {% endif %}
+                        </tbody>
                 </table>
             </div>
         </div>
