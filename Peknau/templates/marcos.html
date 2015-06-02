@@ -36,7 +36,7 @@
         {% for item in group[i] %}
             {% if item and item.week==week%}
                 {% if item[subjects[subject_number - 1]]!=None %}
-                    <td>{{ item[subjects[subject_number - 1]].title }} </br>
+                    <td {% if i == days[day] and item.week == get_week %} class = "btn-update" {% endif %}>{{ item[subjects[subject_number - 1]].subject.title }} </br>
                         <small><strong>{{ item[subjects[subject_number - 1]].lecturer.last_name }}
                             {{ item[subjects[subject_number - 1]].lecturer.first_name[0] }}.
                             {{ item[subjects[subject_number - 1]].lecturer.middle_name[0] }}.

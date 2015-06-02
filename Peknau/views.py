@@ -6,9 +6,10 @@ import datetime
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g
 from models import Group, Specialty, Subject, Lecturer, User
-from forms import SearchForm, LoginForm, SpecialtyForm
+from forms import *
 from flask.ext.login import login_user, login_required, logout_user
 from urlparse import urlparse, urljoin
+
 
 def get_week():
     start = datetime.date(datetime.date.today().year - 1, 9, 1);
@@ -20,11 +21,13 @@ def get_week():
     else:
         return 2
 
+
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
+
 
 def get_redirect_target():
     for target in request.values.get('next'), request.referrer:
@@ -33,11 +36,13 @@ def get_redirect_target():
         if is_safe_url(target):
             return target
 
+
 def redirect_back(endpoint, **values):
     target = request.form['next']
     if not target or not is_safe_url(target):
         target = url_for(endpoint, **values)
     return redirect(target)
+
 
 @app.before_request
 def before_request():
@@ -48,7 +53,7 @@ def before_request():
 @app.route('/index')
 @app.route('/')
 def index():
-    return render_template('groups.html', all_groups=Group.get_all_groups())
+    return render_template('groups.html', all_groups=Group.get_all())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -82,7 +87,7 @@ def group_timetable(group_number):
         else:
             week = int(request.args.get('week'))
         return render_template('timetable.html', group=Group.get_group_by_number(group_number), week=week,
-                               subject=Subject.get_by_title(u'Людино-машинний інтерфейс'))
+                               day=datetime.date.today().weekday())
     return redirect(url_for('index'))
 
 
@@ -92,46 +97,120 @@ def admin():
     return render_template('admin.html')
 
 
-@app.route('/admin/update/<string:what>/<int:id>', methods=['GET', 'POST'])
+@app.route('/admin/<string:what>/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def admin_update(what, id):
     if what == 'specialty':
         form = SpecialtyForm()
-        sp = Specialty.get_by_id(id)
+        tmp = Specialty.get_by_id(id)
         if form.validate_on_submit():
-            sp.long_form = form.long_form.data
-            sp.short_form = form.short_form.data
-            Specialty.update(sp)
+            tmp.long_form = form.long_form.data
+            tmp.short_form = form.short_form.data
+            Specialty.update(tmp)
             flash(u'Спеціальність успішно оновлено!')
             return redirect_back('admin_specialty')
-
-        else:
-            form.long_form.data = sp.long_form
-            form.short_form.data = sp.short_form
+        elif request.method=='POST':
             next = get_redirect_target()
-            return render_template('admin_update.html', form=form, type=what,id = id,next = next)
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
+        else:
+            form.long_form.data = tmp.long_form
+            form.short_form.data = tmp.short_form
+            next = get_redirect_target()
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
+    if what == 'subject':
+        form = SubjectForm()
+        tmp = Subject.get_by_id(id)
+        if form.validate_on_submit():
+            tmp.title = form.title.data
+            Subject.update(tmp)
+            flash(u'Предмет успішно оновлено!')
+            return redirect_back('admin_subject')
+        elif request.method=='POST':
+            next = get_redirect_target()
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
+        else:
+            form.title.data = tmp.title
+            next = get_redirect_target()
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
+    if what == 'group':
+        form = GroupForm()
+        form.group_specialty.choices=[(h.id,h.long_form)for h in Specialty.get_all()]
+        tmp = Group.get_by_id(id)
+        if form.validate_on_submit():
+            tmp.group_number = form.group_number.data
+            tmp.group_course = form.group_course.data
+            tmp.specialty_id = form.group_specialty.data
+            Group.update(tmp)
+            flash(u'Групу упішно оновлено!')
+            return redirect_back('admin_group')
+        elif request.method=='POST':
+            next = get_redirect_target()
+            return render_template('admin_update.html',form=form, type=what, id=id, next=next)
+        else:
+            form.group_number.data = tmp.group_number
+            form.group_course.data = tmp.group_course
+            form.group_specialty.data = tmp.specialty_id
+            next = get_redirect_target()
+            return render_template('admin_update.html',form=form, type=what, id=id, next=next)
+
+@app.route('/admin/<string:what>/delete/<int:id>')
+@login_required
+def admin_delete(what, id):
+    if what == 'specialty':
+        Specialty.delete(id)
+        flash(u"Спеціальність успішно видалено!")
+        return redirect(url_for('admin_specialty'))
+    if what == 'subject':
+        Subject.delete(id)
+        flash(u"Предмет успішно видалено!")
+        return redirect(url_for('admin_subject'))
+    if what == 'group':
+        Group.delete(id)
+        flash(u'Групу успішно видалено!')
+        return redirect(url_for('admin_group'))
 
 
-@app.route('/admin/specialty', methods=['GET', 'DELETE','POST'])
+@app.route('/admin/groups',methods=['GET','POST'])
+@login_required
+def admin_group():
+    form = GroupForm()
+    form.group_specialty.choices=[(h.id,h.long_form)for h in Specialty.get_all()]
+    if form.validate_on_submit():
+        Group.add(form.group_number.data,form.group_course.data,form.group_specialty.data)
+        flash(u'Спеціальність успішно додано')
+        return redirect_back('admin_group')
+    return render_template('admin_group.html', data=Group.get_all(), form=form)
+
+
+@app.route('/admin/specialty', methods=['GET', 'POST'])
 @login_required
 def admin_specialty():
     form = SpecialtyForm()
-    if request.method == 'DELETE':
-        id = request.form['id']
-        Specialty.delete(id)
-        flash(u'Спеціальність успішно видалено!')
-        return 'Спеціальність успішно видалено!'
-    elif form.validate_on_submit():
-        Specialty.add(form.short_form.data,form.long_form.data)
+    if form.validate_on_submit():
+        Specialty.add(form.short_form.data, form.long_form.data)
         flash(u'Спеціальність успішно додано')
         return redirect_back('admin_specialty')
-    return render_template('admin_specialty.html', data=Specialty.get_all(),form = form)
+    return render_template('admin_specialty.html', data=Specialty.get_all(), form=form)
 
-@app.route('/admin/lecturer',methods=['GET','DELETE'])
+
+@app.route('/admin/lecturer', methods=['GET', 'DELETE'])
 @login_required
 def admin_lecturer():
-    if request.method=='GET':
-        return render_template('admin_lecturer.html', data = Lecturer.get_all())
+    if request.method == 'GET':
+        return render_template('admin_lecturer.html', data=Lecturer.get_all())
+
+
+@app.route('/admin/subject', methods=['GET', 'POST'])
+@login_required
+def admin_subject():
+    form = SubjectForm()
+    if form.validate_on_submit():
+        Subject.add(form.title.data)
+        flash(u'Предмет успішно додано!')
+        return redirect_back('admin_subject')
+    if request.method == 'GET':
+        return render_template('admin_subject.html', data=Subject.get_all(), form=form)
+
 
 @app.route('/search', methods=['POST'])
 def search():

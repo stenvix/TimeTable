@@ -8,10 +8,10 @@
         <div class="panel-heading">Керування</div>
         <ul class="list-group">
             <li class="list-group-item"><a href="#">Заміни</a></li>
-            <li class="list-group-item"><a href="#">Групи</a></li>
+            <li class="list-group-item"><a href="{{ url_for('admin_group') }}">Групи</a></li>
             <li class="list-group-item"><a href="{{ url_for('admin_lecturer') }}">Викладачі</a></li>
             <li class="list-group-item"><a href="{{ url_for('admin_specialty') }}"> Спеціальності</a></li>
-            <li class="list-group-item"><a href="#">Предмети</a></li>
+            <li class="list-group-item"><a href="{{ url_for('admin_subject') }}">Предмети</a></li>
         </ul>
     {% endblock %}
 </div>

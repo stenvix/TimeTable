@@ -11,7 +11,7 @@
                     <thead>
                     <tr>
 
-                        {% if data|is_list and data|length > 0%}
+                        {% if data|is_list and data|length > 0 %}
                             {% if type=='group' %}
                                 {#                            <th>Спеціальність</th>#}
                                 <th>Група</th>
@@ -54,8 +54,16 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% if type=='subject' %}
-                                    <td>{{ item.title }}</td>
-                                    <td>{{ item.lecturer.last_name }}</td>
+                                    {% set con = item.lecturers|length + 1 %}
+                                    <td rowspan="{{ con }}">{{ item.title }}</td>
+                                    </tr>
+                                    {% for lecturer in item.lecturers %}
+                                        <tr>
+                                            <td>
+                                                {{ lecturer.last_name }} {{ lecturer.first_name[0] }}. {{ lecturer.middle_name[0] }}.
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 {% endif %}
                             {% endfor %}
 

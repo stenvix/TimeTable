@@ -2,41 +2,41 @@
 {% from 'marcos.html' import render_field %}
 {% block container %}
     <div class="panel panel-primary">
-        {#        <div class="panel-heading">Спеціальності</div>#}
         <table class="table table-bordered">
             <thead>
             <tr>
                 <th style="width: 5em"></th>
-                <th class="text-center" style="width: 15em">Скорочена форма</th>
-                <th class="text-center">Повна форма</th>
-                <th></th>
-                <th></th>
+                <th class="text-center">Назва предмету</th>
+                {#                <th class="text-center"></th>#}
+                <th style="width: 15em"></th>
+                <th style="width: 15em"></th>
             </tr>
             </thead>
             <tbody>
+            {#            Додавання нового            #}
             <tr>
                 <td></td>
-                <form method="post" action="{{ url_for('admin_specialty') }}">
+                <form method="post" action="{{ url_for('admin_subject') }}">
                     <input type=hidden value="{{ next or '' }}" name=next>
                     {{ form.csrf_token }}
                     {{ form.hidden_tag() }}
-                    <td style="border-left: 1px solid #2780E3">{{ render_field(form.short_form,False) }}</td>
-                    <td>{{ render_field(form.long_form,False) }}</td>
+
+                    <td>{{ render_field(form.title,False) }}</td>
                     <td colspan='2'>
-                        <div class="form-group">{{ form.submit(value="Додати",class="btn-primary btn btn-group-justified") }}</div>
+                        <div class="form-group">{{ form.submit(value="Додати",style="padding:0.6em;text-aligh:center;",class="btn-primary btn btn-group-justified") }}</div>
+                        <input type=hidden value="{{ next or '' }}" name=next>
                     </td>
                 </form>
             </tr>
-
+            {#            Вивід даних       #}
             {% for item in data %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ item.short_form }}</td>
-                    <td>{{ item.long_form }}</td>
-                    <td><a href="{{ url_for('admin_update',what = 'specialty',id = item.id) }}">
+                    <td>{{ item.title }}</td>
+                    <td><a href="{{ url_for('admin_update',what = 'subject',id = item.id) }}">
                         <button class="btn-primary btn btn-slim">Редагувати</button>
                     </a></td>
-                    <td><a href="{{ url_for('admin_delete',what = 'specialty',id = item.id) }}">
+                    <td><a href="{{ url_for('admin_delete',what = 'subject',id = item.id) }}">
                         <button class="btn-primary btn btn-slim">Видалити
                         </button>
                     </a>

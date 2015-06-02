@@ -1,0 +1,55 @@
+{% extends 'admin.html' %}
+{% from 'marcos.html' import render_field %}
+{% block container %}
+    <div class="panel panel-primary">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th style="width: 5em"></th>
+                <th class="text-center">Номер групи</th>
+                <th class="text-center">Курс</th>
+                {#                <th class="text-center"></th>#}
+                <th>Спеціальність</th>
+                <th colspan="2"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {#            Додавання нового            #}
+            <tr>
+                <td></td>
+                <form method="post" action="{{ url_for('admin_group') }}">
+                    <input type=hidden value="{{ next or '' }}" name=next>
+                    {{ form.csrf_token }}
+                    {{ form.hidden_tag() }}
+
+                    <td>{{ render_field(form.group_number,False) }}</td>
+                    <td>{{ render_field(form.group_course,False) }}</td>
+                    <td>{{ render_field(form.group_specialty,False) }}</td>
+                    <td colspan='2'>
+                        <div class="form-group">{{ form.submit(value="Додати",style="padding:0.6em;text-aligh:center;",class="btn-primary btn btn-group-justified") }}</div>
+                        <input type=hidden value="{{ next or '' }}" name=next>
+                    </td>
+                </form>
+            </tr>
+            {#            Вивід даних       #}
+            {% for item in data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.group_number }}</td>
+                    {% set courses=['Перший курс','Другий курс','Третій курс','Четвертий курс','Бакалаврат'] %}
+                    <td>{{ courses[item.group_course - 1] }}</td>
+                    <td>{{ item.specialty.long_form }}</td>
+                    <td><a href="{{ url_for('admin_update',what = 'group',id = item.id) }}">
+                        <button class="btn-primary btn btn-slim">Редагувати</button>
+                    </a></td>
+                    <td><a href="{{ url_for('admin_delete',what = 'group',id = item.id) }}">
+                        <button class="btn-primary btn btn-slim">Видалити
+                        </button>
+                    </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

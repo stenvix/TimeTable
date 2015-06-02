@@ -1,3 +1,4 @@
+import datetime
 
 __author__ = 'gareth'
 from flask import Flask
@@ -26,13 +27,13 @@ app.config['WTF_CSRF_SECRET_KEY'] = app.config['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'Peknau.db')
 db.text_factory = str
 
-@app.template_filter('is_list')
-def is_list(value):
-    return isinstance(value, list)
-app.jinja_env.filters['reverse'] = is_list
-
-
 # Import Modules
 import views
 import models
 import forms
+
+@app.template_filter('is_list')
+def is_list(value):
+    return isinstance(value, list)
+app.jinja_env.filters['reverse'] = is_list
+app.jinja_env.globals.update(get_week=views.get_week())

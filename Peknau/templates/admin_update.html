@@ -2,27 +2,62 @@
 {% from 'marcos.html' import render_field %}
 {% block container %}
 
-    {% if type == 'specialty' %}
-        <div class="panel panel-primary">
+
+    <div class="panel panel-primary">
         <div class="panel-heading">Редагувати</div>
-            <div class="panel-body">
-        <form method="post" action="{{ url_for('admin_update',what = type,id = id) }}">
+        <div class="panel-body">
+            <form method="post" action="{{ url_for('admin_update',what = type,id = id) }}">
                 {{ form.csrf_token }}
                 {{ form.hidden_tag() }}
+                <input type=hidden value="{{ next or '' }}" name=next>
+                {% if type == 'specialty' %}
 
-        {{ render_field(form.long_form)}}
+                    {{ render_field(form.long_form) }}
 
-        {{ render_field(form.short_form) }}
-               <div class="col-lg-4 ">
+                    {{ render_field(form.short_form) }}
+                    <div class="col-lg-4 ">
 
-                   <a href="{{ url_for('admin_specialty') }}" ><button class="btn btn-group-justified" type="button">Відмінити</button></a>
+                        <a href="{{ url_for('admin_specialty') }}">
+                            <button class="btn btn-group-justified" type="button">Відмінити</button>
+                        </a>
+
+                    </div>
+                    <div class="form-group col-lg-8">
+                        {{ form.submit( class="btn btn-group-justified btn-primary") }}
+                    </div>
+                {% endif %}
+                {% if type=='subject' %}
+                    {{ render_field(form.title) }}
+                    <div class="col-lg-4 ">
+
+                        <a href="{{ url_for('admin_subject') }}">
+                            <button class="btn btn-group-justified" type="button">Відмінити</button>
+                        </a>
+                        <input type=hidden value="{{ next or '' }}" name=next>
+                    </div>
+                    <div class="form-group col-lg-8">
+                        {{ form.submit( class="btn btn-group-justified btn-primary") }}
+                    </div>
+                {% endif %}
+                {% if type =='group' %}
+
+                <td>{{ render_field(form.group_number,False) }}</td>
+                <td>{{ render_field(form.group_course,False) }}</td>
+                <td>{{ render_field(form.group_specialty,False) }}</td>
+                <div class="col-lg-4 ">
+
+                    <a href="{{ url_for('admin_group') }}">
+                        <button class="btn btn-group-justified" type="button">Відмінити</button>
+                    </a>
                     <input type=hidden value="{{ next or '' }}" name=next>
                 </div>
                 <div class="form-group col-lg-8">
-        {{ form.submit( class="btn btn-group-justified btn-primary") }}
-</div>
-        </form>
-            </div>
+                    {{ form.submit( class="btn btn-group-justified btn-primary") }}
+                </div>
+                {% endif %}
+
+            </form>
         </div>
-    {% endif %}
+    </div>
 {% endblock %}
+

@@ -1,10 +1,10 @@
-
+from lib2to3.pytree import Base
 
 __author__ = 'Stepanov Valentin'
 # Import
 from Peknau import db, login_manager
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, Table
 from sqlalchemy.orm import backref
 from datetime import datetime
 
@@ -63,6 +63,29 @@ class Group(db.Model):
     group_course = db.Column(db.Integer, nullable=False)
     specialty_id = db.Column(db.Integer, db.ForeignKey("specialty.id"))
 
+    def __init__(self,group_number,group_course,specialty_id):
+        self.group_number = group_number
+        self.group_course = group_course
+        self.specialty_id = specialty_id
+
+    @staticmethod
+    def add(group_number,group_course,specialty_id):
+        db.session.add(Group(group_number,group_course,specialty_id))
+        db.session.commit()
+    @staticmethod
+    def delete(group_id):
+        db.session.delete(Group.get_by_id(group_id))
+        db.session.commit()
+
+    @staticmethod
+    def update(group):
+        db.session.add(group)
+        db.session.commit()
+
+    @staticmethod
+    def get_by_id(group_id):
+        return Group.query.get(group_id)
+
     @staticmethod
     def get_course_groups(number):
         return Group.query.filter_by(group_course=number).all()
@@ -84,8 +107,8 @@ class Group(db.Model):
         return Group.query.filter(Group.group_number.like('%' + str(number) + '%')).all()
 
     @staticmethod
-    def get_all_groups():
-        return Group.query.all()
+    def get_all():
+        return Group.query.order_by(Group.group_course,Group.group_number).all()
 
     @staticmethod
     def get_by_number_and_specialty(number, specialty):
@@ -112,11 +135,11 @@ class Specialty(db.Model):
 
     @staticmethod
     def get_all():
-        return Specialty.query.all()
+        return Specialty.query.order_by(Specialty.long_form).all()
 
     @staticmethod
     def get_by_id(specialty_id):
-        return Specialty.query.filter_by(id=specialty_id).first()
+        return Specialty.query.get(specialty_id)
 
     @staticmethod
     def update(specialty):
@@ -132,12 +155,26 @@ class Specialty(db.Model):
     def count():
         return Specialty.query.count()
 
+class Lessons(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.id'))
+    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'))
+    subject = db.relationship("Subject")
+    lecturer = db.relationship("Lecturer")
+
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.UnicodeText, nullable=False)
-    lecturer_id = db.Column(db.Integer, db.ForeignKey("lecturer.id"))
-    lecturer = db.relationship('Lecturer', backref='subjects', cascade="save-update, merge, delete")
+    lecturers = db.relationship("Lecturer",
+                    secondary="lessons",backref=db.backref('subjects', lazy='joined'))
+    def __init__(self,title):
+        self.title = title
+
+    @staticmethod
+    def add(title):
+        db.session.add(Subject(title))
+        db.session.commit()
 
     @staticmethod
     def get_by_title(title):
@@ -155,7 +192,23 @@ class Subject(db.Model):
             return result
         else:return None
 
+    @staticmethod
+    def get_all():
+        return Subject.query.order_by('title').all()
 
+    @staticmethod
+    def get_by_id(id):
+        return Subject.query.get(id)
+
+    @staticmethod
+    def update(subject):
+        db.session.add(subject)
+        db.session.commit()
+
+    @staticmethod
+    def delete(subject_id):
+        db.session.delete(Subject.get_by_id(subject_id))
+        db.session.commit()
 
 class Lecturer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -180,7 +233,7 @@ class Lecturer(db.Model):
 
     @staticmethod
     def get_all():
-        return  Lecturer.query.all()
+        return  Lecturer.query.order_by('last_name').all()
 
 
 class Day(object):
@@ -205,51 +258,51 @@ class Day(object):
 
     @declared_attr
     def lesson_one(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def lesson_two(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def lesson_three(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def lesson_four(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def lesson_five(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def lesson_six(cls):
-        return db.Column(db.Integer, db.ForeignKey("subject.id"))
+        return db.Column(db.Integer, db.ForeignKey("lessons.id"))
 
     @declared_attr
     def subject_one(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_one], backref=cls.__name__.lower() + u'_one', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_one], backref=cls.__name__.lower() + u'_one', cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_two(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_two], backref=cls.__name__.lower() + u'_two', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_two], backref=cls.__name__.lower() + u'_two', cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_three(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_three], backref=cls.__name__.lower() + u'_three', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_three], backref=cls.__name__.lower() + u'_three', cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_four(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_four], backref=cls.__name__.lower() + u'_four', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_four], backref=cls.__name__.lower() + u'_four', cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_five(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_five], backref=cls.__name__.lower() + u'_five', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_five], backref=cls.__name__.lower() + u'_five', cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_six(cls):
-        return db.relationship('Subject', foreign_keys=[cls.lesson_six], backref=cls.__name__.lower() + u'_six', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_six], backref=cls.__name__.lower() + u'_six', cascade="save-update, merge, delete")
 
 
 class Monday(Day, db.Model):

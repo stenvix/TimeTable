@@ -98,23 +98,36 @@ def initdb():
     db.session.add(Lecturer(first_name=u"Наталія", middle_name=u"Анатоліївна", last_name=u"Рябчук")) # 1
     db.session.add(Lecturer(first_name=u'Олег',middle_name=u'Львович',last_name=u'Лещинський')) # 2
     db.session.add(Lecturer(first_name=u'Олександр',middle_name=u'Олексійович',last_name=u'Юзюк'))# 3
-    db.session.add(Lecturer(first_name=u'FIND',middle_name=u'FIND',last_name=u'Удовенко')) # 4
+    db.session.add(Lecturer(first_name=u'Віра',middle_name=u'Констянтинівна',last_name=u'Удовенко')) # 4
     db.session.add(Lecturer(first_name=u'Павел',middle_name=u'Юрійович',last_name=u'Родіонов')) # 5
     db.session.add(Lecturer(first_name=u'Анна',middle_name=u'Василівна',last_name=u'Селезень')) # 6
     db.session.add(Lecturer(first_name=u'Оксана',middle_name=u'Петрівна',last_name=u'Дуксенко')) # 7
     db.session.add(Lecturer(first_name=u'Раїса',middle_name=u'Іванівна',last_name=u'Миронович'))  # 8
     db.session.add(Lecturer(first_name=u'Юрій',middle_name=u'Іванович',last_name=u'Чорний')) # 9
 
-    db.session.add(Subject(title=u"Математичні методи дослідження операцій", lecturer_id=2))
-    db.session.add(Subject(title=u"Інженерна та комп'ютерна графіка", lecturer_id=3))
-    db.session.add(Subject(title=u"Конструювання програмного забеспечення", lecturer_id=1))  # 3
-    db.session.add(Subject(title=u"Людино-машинний інтерфейс", lecturer_id=7))  # 4
-    db.session.add(Subject(title=u"Основи менеджменту і макретингу", lecturer_id=6))  # 5
-    db.session.add(Subject(title=u"Веб-дизайн", lecturer_id=5))  # 6
-    db.session.add(Subject(title=u"Економіка і планування виробництва", lecturer_id=4))  # 7
-    db.session.add(Subject(title=u"Проектний практикум", lecturer_id=9))  # 8
-    db.session.add(Subject(title=u"Охорона праці в галузі", lecturer_id=8))  # 9
-    db.session.add(Subject(title=u"Проектування автоматизованих інформаційних систем", lecturer_id=7))  # 10
+    db.session.add(Subject(title=u"Математичні методи дослідження операцій"))
+    db.session.add(Subject(title=u"Інженерна та комп'ютерна графіка"))
+    db.session.add(Subject(title=u"Конструювання програмного забеспечення"))  # 3
+    db.session.add(Subject(title=u"Людино-машинний інтерфейс"))  # 4
+    db.session.add(Subject(title=u"Основи менеджменту і макретингу"))  # 5
+    db.session.add(Subject(title=u"Веб-дизайн"))  # 6
+    db.session.add(Subject(title=u"Економіка і планування виробництва"))  # 7
+    db.session.add(Subject(title=u"Проектний практикум"))  # 8
+    db.session.add(Subject(title=u"Охорона праці в галузі"))  # 9
+    db.session.add(Subject(title=u"Проектування автоматизованих інформаційних систем"))  # 10
+
+    db.session.add(Lessons(subject_id=1,lecturer_id=2))
+    db.session.add(Lessons(subject_id=2,lecturer_id=3))
+    db.session.add(Lessons(subject_id=3,lecturer_id=1))
+    db.session.add(Lessons(subject_id=4,lecturer_id=7))
+    db.session.add(Lessons(subject_id=4,lecturer_id=1))
+    db.session.add(Lessons(subject_id=5,lecturer_id=6))
+    db.session.add(Lessons(subject_id=5,lecturer_id=1))
+    db.session.add(Lessons(subject_id=6,lecturer_id=5))
+    db.session.add(Lessons(subject_id=7,lecturer_id=4))
+    db.session.add(Lessons(subject_id=8,lecturer_id=9))
+    db.session.add(Lessons(subject_id=9,lecturer_id=8))
+    db.session.add(Lessons(subject_id=10,lecturer_id=7))
 
     #week
     db.session.add(Monday(week=1, group_id=Group.get_group_by_number(427).id, lesson_three=1, lesson_four=2))
