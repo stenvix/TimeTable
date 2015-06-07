@@ -5,7 +5,7 @@ import datetime
 
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g
-from models import Group, Specialty, Subject, Lecturer, User
+from models import Group, Specialty, Subject, Lecturer, User, Lessons
 from forms import *
 from flask.ext.login import login_user, login_required, logout_user
 from urlparse import urlparse, urljoin
@@ -96,6 +96,11 @@ def group_timetable(group_number):
 def admin():
     return render_template('admin.html')
 
+@app.route('/admin/timetable')
+@login_required
+def admin_timetable():
+    pass
+
 
 @app.route('/admin/<string:what>/update/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -152,6 +157,30 @@ def admin_update(what, id):
             form.group_specialty.data = tmp.specialty_id
             next = get_redirect_target()
             return render_template('admin_update.html',form=form, type=what, id=id, next=next)
+    if what == 'lecturer':
+        form = LecturerForm()
+        form.lessons.choices = [(h.id,h.title)for h in Subject.get_all()]
+        tmp = Lecturer.get_by_id(id)
+
+        if form.validate_on_submit():
+            tmp.first_name = form.first_name.data
+            tmp.middle_name = form.middle_name.data
+            tmp.last_name = form.last_name.data
+            Lecturer.update(tmp)
+            Lessons.add(id,form.lessons.data)
+            flash(u'Дані викладача успішно оновлено!')
+            return redirect_back('admin_lecturer')
+        elif request.method =='POST':
+            next = get_redirect_target()
+            return render_template('admin_update.html',form = form,type=what,id=id,next = next)
+        else:
+            form.lessons.data = [h.id for h in tmp.subjects]
+            form.first_name.data = tmp.first_name
+            form.middle_name.data = tmp.middle_name
+            form.last_name.data = tmp.last_name
+            next=get_redirect_target()
+            return render_template('admin_update.html',form = form,type=what,id=id,next = next)
+
 
 @app.route('/admin/<string:what>/delete/<int:id>')
 @login_required
@@ -168,6 +197,10 @@ def admin_delete(what, id):
         Group.delete(id)
         flash(u'Групу успішно видалено!')
         return redirect(url_for('admin_group'))
+    if what == 'lecturer':
+        Lecturer.delete(id)
+        flash(u'Викладача успішно видалено!')
+        return redirect(url_for('admin_lecturer'))
 
 
 @app.route('/admin/groups',methods=['GET','POST'])
@@ -193,11 +226,18 @@ def admin_specialty():
     return render_template('admin_specialty.html', data=Specialty.get_all(), form=form)
 
 
-@app.route('/admin/lecturer', methods=['GET', 'DELETE'])
+@app.route('/admin/lecturer', methods=['GET', 'POST'])
 @login_required
 def admin_lecturer():
-    if request.method == 'GET':
-        return render_template('admin_lecturer.html', data=Lecturer.get_all())
+    form = LecturerForm()
+    form.lessons.choices = [(h.id,h.title)for h in Subject.get_all()]
+    if form.validate_on_submit():
+        Lecturer.add(form.first_name.data,form.middle_name.data,form.last_name.data)
+        id = Lecturer.get_id_by_strict_name(form.first_name.data,form.middle_name.data,form.last_name.data)
+        Lessons.add(id,form.lessons.data)
+        flash(u'Викладача '+form.last_name.data+' '+form.first_name.data+u' успішно додано!')
+        return  redirect_back('admin_lecturer')
+    return render_template('admin_lecturer.html', data=Lecturer.get_all(),form=form)
 
 
 @app.route('/admin/subject', methods=['GET', 'POST'])

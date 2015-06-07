@@ -2,7 +2,7 @@
 __author__ = 'stepanov'
 
 from flask_wtf import Form
-from wtforms import SelectField,StringField,PasswordField,SubmitField,IntegerField
+from wtforms import SelectField,StringField,PasswordField,SubmitField,IntegerField,SelectMultipleField
 from wtforms.validators import DataRequired,Length,NumberRange
 
 class SearchForm(Form):
@@ -26,4 +26,11 @@ class GroupForm(Form):
     group_number = IntegerField(u'Номер групи',validators=[DataRequired(message=u'Введіть номер групи'),NumberRange(max=999,message=u'Можна ввести не більше 3 цифр')])
     group_course = SelectField(u'Курс',choices=[(1,u'Перший курс'),(2,u'Другий курс'),(3,u'Третій курс'),(4,u'Четвертий курс'),(5,u'Бакалаврат')],coerce=int)
     group_specialty = SelectField(u'Спеціальність групи',coerce=int)
+    submit = SubmitField(u'Оновити')
+
+class LecturerForm(Form):
+    first_name = StringField(u'Ім’я',validators=[DataRequired(message=u'Введіть ім’я')])
+    middle_name = StringField(u'По-батькові',validators=[DataRequired(message=u'Введіть по батькові')])
+    last_name = StringField(u'Прізвище',validators=[DataRequired(message=u'Введіть прізвище')])
+    lessons = SelectMultipleField(u'Предмети',coerce=int)
     submit = SubmitField(u'Оновити')

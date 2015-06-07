@@ -33,7 +33,6 @@
                         <a href="{{ url_for('admin_subject') }}">
                             <button class="btn btn-group-justified" type="button">Відмінити</button>
                         </a>
-                        <input type=hidden value="{{ next or '' }}" name=next>
                     </div>
                     <div class="form-group col-lg-8">
                         {{ form.submit( class="btn btn-group-justified btn-primary") }}
@@ -49,7 +48,23 @@
                     <a href="{{ url_for('admin_group') }}">
                         <button class="btn btn-group-justified" type="button">Відмінити</button>
                     </a>
-                    <input type=hidden value="{{ next or '' }}" name=next>
+                </div>
+                <div class="form-group col-lg-8">
+                    {{ form.submit( class="btn btn-group-justified btn-primary") }}
+                </div>
+                {% endif %}
+                            {% if type =='lecturer' %}
+
+                <td>{{ render_field(form.last_name) }}</td>
+                <td>{{ render_field(form.first_name) }}</td>
+                <td>{{ render_field(form.middle_name) }}</td>
+
+                <td>{{ render_field(form.lessons,class='chosen',heigt="200px")}}</td>
+                <div class="col-lg-4 ">
+
+                    <a href="{{ url_for('admin_group') }}">
+                        <button class="btn btn-group-justified" type="button">Відмінити</button>
+                    </a>
                 </div>
                 <div class="form-group col-lg-8">
                     {{ form.submit( class="btn btn-group-justified btn-primary") }}

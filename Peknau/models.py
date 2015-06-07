@@ -4,8 +4,8 @@ __author__ = 'Stepanov Valentin'
 # Import
 from Peknau import db, login_manager
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy import or_, func, Table
 from sqlalchemy.orm import backref
+from sqlalchemy import not_
 from datetime import datetime
 
 
@@ -24,13 +24,13 @@ class User(db.Model):
         self.registered_on = datetime.utcnow()
 
     @staticmethod
-    def add(username,password,email):
-        db.session.add(User(username=username,password=password,email=email))
+    def add(username, password, email):
+        db.session.add(User(username=username, password=password, email=email))
         db.commit()
 
     @staticmethod
-    def validate(username,password):
-        return User.query.filter_by(username=username,password=password).first()
+    def validate(username, password):
+        return User.query.filter_by(username=username, password=password).first()
 
     def is_authenticated(self):
         return True
@@ -38,18 +38,14 @@ class User(db.Model):
     def is_active(self):
         return True
 
-
     def is_anonymous(self):
         return False
-
 
     def get_id(self):
         return unicode(self.id)
 
-
     def __repr__(self):
         return '<User %r>' % (self.username)
-
 
     @login_manager.user_loader
     def load_user(id):
@@ -63,15 +59,16 @@ class Group(db.Model):
     group_course = db.Column(db.Integer, nullable=False)
     specialty_id = db.Column(db.Integer, db.ForeignKey("specialty.id"))
 
-    def __init__(self,group_number,group_course,specialty_id):
+    def __init__(self, group_number, group_course, specialty_id):
         self.group_number = group_number
         self.group_course = group_course
         self.specialty_id = specialty_id
 
     @staticmethod
-    def add(group_number,group_course,specialty_id):
-        db.session.add(Group(group_number,group_course,specialty_id))
+    def add(group_number, group_course, specialty_id):
+        db.session.add(Group(group_number, group_course, specialty_id))
         db.session.commit()
+
     @staticmethod
     def delete(group_id):
         db.session.delete(Group.get_by_id(group_id))
@@ -108,7 +105,7 @@ class Group(db.Model):
 
     @staticmethod
     def get_all():
-        return Group.query.order_by(Group.group_course,Group.group_number).all()
+        return Group.query.order_by(Group.group_course, Group.group_number).all()
 
     @staticmethod
     def get_by_number_and_specialty(number, specialty):
@@ -121,15 +118,15 @@ class Specialty(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     short_form = db.Column(db.Unicode, nullable=False)
     long_form = db.Column(db.Unicode, nullable=False)
-    group = db.relationship('Group', backref='specialty',cascade="save-update, merge, delete")
+    group = db.relationship('Group', backref='specialty', cascade="save-update, merge, delete")
 
-    def __init__(self,short_form,long_form):
+    def __init__(self, short_form, long_form):
         self.short_form = short_form
         self.long_form = long_form
 
     @staticmethod
-    def add(short_form,long_form):
-        tmp = Specialty(short_form,long_form)
+    def add(short_form, long_form):
+        tmp = Specialty(short_form, long_form)
         db.session.add(tmp)
         db.session.commit()
 
@@ -155,20 +152,43 @@ class Specialty(db.Model):
     def count():
         return Specialty.query.count()
 
+
 class Lessons(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.id'))
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'))
     subject = db.relationship("Subject")
     lecturer = db.relationship("Lecturer")
+
+    def __init__(self, lecturer_id, subject_id):
+        self.lecturer_id = lecturer_id
+        self.subject_id = subject_id
+
+    @staticmethod
+    def add(lecturer_id, subjects):
+        all = Lessons.query.filter_by(lecturer_id=lecturer_id).all()
+        all_dict = []
+        for i in all:
+            all_dict.append(i.subject_id)
+
+        delete = set(all_dict).difference(set(subjects))
+
+        for i in delete:
+            Lessons.query.filter(Lessons.lecturer_id == lecturer_id, Lessons.subject_id == i).delete()
+
+        for i in subjects:
+            if i not in all_dict:
+                db.session.add(Lessons(lecturer_id, i))
+        db.session.commit()
 
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.UnicodeText, nullable=False)
     lecturers = db.relationship("Lecturer",
-                    secondary="lessons",backref=db.backref('subjects', lazy='joined'))
-    def __init__(self,title):
+                                secondary="lessons", backref=db.backref('subjects', lazy='joined'))
+
+    def __init__(self, title):
         self.title = title
 
     @staticmethod
@@ -186,11 +206,12 @@ class Subject(db.Model):
         result = []
         for item in all:
             low_title = item.title.lower()
-            if low_title.find(text.lower())!=-1:
+            if low_title.find(text.lower()) != -1:
                 result.append(item)
-        if len(result)!=0:
+        if len(result) != 0:
             return result
-        else:return None
+        else:
+            return None
 
     @staticmethod
     def get_all():
@@ -210,11 +231,36 @@ class Subject(db.Model):
         db.session.delete(Subject.get_by_id(subject_id))
         db.session.commit()
 
+
 class Lecturer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     middle_name = db.Column(db.String)
     last_name = db.Column(db.String, nullable=False)
+
+    def __init__(self, first_name, middle_name, last_name):
+        self.first_name = first_name
+        self.middle_name = middle_name
+        self.last_name = last_name
+
+    @staticmethod
+    def add(first_name, middle_name, last_name):
+        db.session.add(Lecturer(first_name, middle_name, last_name))
+        db.session.commit()
+
+    @staticmethod
+    def update(lecturer):
+        db.session.add(lecturer)
+        db.session.commit()
+
+    @staticmethod
+    def delete(id):
+        db.session.delete(Lecturer.query.get(id))
+        db.session.commit()
+
+    @staticmethod
+    def get_by_id(id):
+        return Lecturer.query.get(id)
 
     @staticmethod
     def get_by_name(text):
@@ -224,16 +270,21 @@ class Lecturer(db.Model):
             tmp_first = item.first_name.lower()
             tmp_last = item.last_name.lower()
             tmp_middle = item.middle_name.lower()
-            if tmp_first.find(text.lower())!=-1 or tmp_last.find(text.lower())!=-1 or tmp_middle.find(text.lower())!=-1:
+            if tmp_first.find(text.lower()) != -1 or tmp_last.find(text.lower()) != -1 or tmp_middle.find(
+                    text.lower()) != -1:
                 result.append(item)
 
-        if len(result)!=0:
-          return result
-        else:return None
+        if len(result) != 0:
+            return result
+        else:
+            return None
+    @staticmethod
+    def get_id_by_strict_name(first_name,middle_name,last_name):
+        return Lecturer.query.filter(Lecturer.first_name==first_name,Lecturer.middle_name==middle_name,Lecturer.last_name==last_name).first().id
 
     @staticmethod
     def get_all():
-        return  Lecturer.query.order_by('last_name').all()
+        return Lecturer.query.order_by('last_name').all()
 
 
 class Day(object):
@@ -253,8 +304,8 @@ class Day(object):
 
     @declared_attr
     def group(cls):
-        return db.relationship('Group',cascade="all,delete", backref=backref(cls.__name__.lower(), cascade="all,delete"))
-
+        return db.relationship('Group', cascade="all,delete",
+                               backref=backref(cls.__name__.lower(), cascade="all,delete"))
 
     @declared_attr
     def lesson_one(cls):
@@ -282,27 +333,33 @@ class Day(object):
 
     @declared_attr
     def subject_one(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_one], backref=cls.__name__.lower() + u'_one', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_one], backref=cls.__name__.lower() + u'_one',
+                               cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_two(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_two], backref=cls.__name__.lower() + u'_two', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_two], backref=cls.__name__.lower() + u'_two',
+                               cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_three(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_three], backref=cls.__name__.lower() + u'_three', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_three], backref=cls.__name__.lower() + u'_three',
+                               cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_four(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_four], backref=cls.__name__.lower() + u'_four', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_four], backref=cls.__name__.lower() + u'_four',
+                               cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_five(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_five], backref=cls.__name__.lower() + u'_five', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_five], backref=cls.__name__.lower() + u'_five',
+                               cascade="save-update, merge, delete")
 
     @declared_attr
     def subject_six(cls):
-        return db.relationship('Lessons', foreign_keys=[cls.lesson_six], backref=cls.__name__.lower() + u'_six', cascade="save-update, merge, delete")
+        return db.relationship('Lessons', foreign_keys=[cls.lesson_six], backref=cls.__name__.lower() + u'_six',
+                               cascade="save-update, merge, delete")
 
 
 class Monday(Day, db.Model):

@@ -1,22 +1,51 @@
 {% extends 'admin.html' %}
+{% from 'marcos.html' import render_field %}
 {% block container %}
     <div class="panel panel-primary">
 
         <table class="table table-bordered">
             <thead>
-            <tr>
-                <th class="text-center">ПІБ</th>
-                <th></th>
-                <th></th>
+            <tr> <th></th>
+                <th class="text-center">Прізвище</th>
+                <th class="text-center">Ім’я</th>
+                <th class="text-center">По батькові</th>
+                <th style="width: 20em">Предмети</th>
+                <th colspan="2"></th>
             </tr>
             </thead>
             <tbody>
+            <tr>
+                <td></td>
+                <form method="post" action="{{ url_for('admin_lecturer') }}">
+                    <input type=hidden value="{{ next or '' }}" name=next>
+                    {{ form.csrf_token }}
+                    {{ form.hidden_tag() }}
+                    <td style="border-left: 1px solid #2780E3">{{ render_field(form.last_name,False) }}</td>
+                    <td>{{ render_field(form.first_name,False) }}</td>
+                    <td>{{ render_field(form.middle_name,False) }}</td>
+                    <td>{{ render_field(form.lessons,False,class="chosen") }}</td>
+                    <td colspan='2'>
+                        <div class="form-group">{{ form.submit(value="Додати",class="btn-primary btn btn-group-justified btn-slim") }}</div>
+                    </td>
+                </form>
+            </tr>
             {% for item in data %}
                 <tr>
-                    <td>{{ item.last_name }} {{ item.first_name }} {{ item.middle_name }}</td>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.last_name }}</td>
+                    <td> {{ item.first_name }}</td>
+                    <td> {{ item.middle_name }}</td>
 
-                    <td  style="width: 10em"><a href="#"> <button class="btn-primary btn btn-slim" id="specUpdate">Редагувати</button></a></td>
-                    <td  style="width: 10em"><button class="btn-primary btn btn-slim" id="specDelete" spec_id="{{ item.id }}">Видалити</button></td>
+                    <td><ol>{% for i in item.subjects %}<li> {{ i.title }} </li> {% endfor %}</ol></td>
+                    <td><a href="{{ url_for('admin_update',what = 'lecturer',id = item.id) }}">
+                        <button class="btn-primary btn btn-slim">Редагувати</button>
+                    </a></td>
+                    <td><a href="{{ url_for('admin_delete',what = 'lecturer',id = item.id) }}">
+                        <button class="btn-primary btn btn-slim">Видалити
+                        </button>
+                    </a>
+                    </td>
+                </tr>
                 </tr>
             {% endfor %}
             </tbody>
