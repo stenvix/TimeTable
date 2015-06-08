@@ -164,6 +164,18 @@ class Lessons(db.Model):
         self.lecturer_id = lecturer_id
         self.subject_id = subject_id
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'lecturer': self.lecturer_id,
+            'subject': self.subject_id
+        }
+
+    @staticmethod
+    def get_by_subject(subject_id):
+        return Lessons.query.filter_by(subject_id=subject_id).all()
+
     @staticmethod
     def add(lecturer_id, subjects):
         all = Lessons.query.filter_by(lecturer_id=lecturer_id).all()
@@ -278,9 +290,11 @@ class Lecturer(db.Model):
             return result
         else:
             return None
+
     @staticmethod
-    def get_id_by_strict_name(first_name,middle_name,last_name):
-        return Lecturer.query.filter(Lecturer.first_name==first_name,Lecturer.middle_name==middle_name,Lecturer.last_name==last_name).first().id
+    def get_id_by_strict_name(first_name, middle_name, last_name):
+        return Lecturer.query.filter(Lecturer.first_name == first_name, Lecturer.middle_name == middle_name,
+                                     Lecturer.last_name == last_name).first().id
 
     @staticmethod
     def get_all():
