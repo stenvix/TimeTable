@@ -4,7 +4,7 @@ __author__ = 'gareth'
 import datetime
 
 from Peknau import app
-from flask import render_template, flash, redirect, url_for, request, g
+from flask import render_template, flash, redirect, url_for, request, g, jsonify
 from models import Group, Specialty, Subject, Lecturer, User, Lessons
 from forms import *
 from flask.ext.login import login_user, login_required, logout_user
@@ -96,10 +96,93 @@ def group_timetable(group_number):
 def admin():
     return render_template('admin.html')
 
+
+@app.route('/admin/rest/<int:subject>')
+@login_required
+def admin_rest(subject):
+    return jsonify(result=[(h.serialize) for h in Lessons.get_by_subject(subject)])
+
+
 @app.route('/admin/timetable')
 @login_required
 def admin_timetable():
-    pass
+    form = TimeTable()
+    all_groups = Group.get_all()
+    choises = []
+    courses = [u'Перший курс', u'Другий курс', u'Третій курс', u'Четвертий', u'Бакалаврат']
+    index = 1
+    for j in courses:
+        tmp = [j]
+        tmp.append([(h.id, unicode(h.group_number) + '-' + h.specialty.short_form) for h in all_groups if
+                    h.group_course == index])
+        choises.append(tmp)
+        index += 1
+    # print choises
+    form.group.choices = choises
+
+    group = request.args.get('group')
+    day = request.args.get('day')
+    if group:
+        form.group.data = int(group)
+    else:
+        form.group.data = 0
+    if day:
+        form.day.data = day
+    else:
+        form.day.data = 0
+    if request.args.get('edit') == 'yes' and form.group.data != 'None' and form.day.data != 'None':
+        edit_form_week_one = EditForm()
+        edit_form_week_two = EditForm()
+        item = None
+        if group:
+            item = Group.get_by_id(group)
+        if day:
+            item_day = getattr(item, day)
+            if item_day != []:
+                for i in item_day:
+                    if i.week == 1:
+                        if i.subject_one:
+                            edit_form_week_one.lesson_one.data = i.subject_one.subject_id
+                            edit_form_week_one.lesson_one_lecturer.data = i.subject_one.lecturer_id
+                        if i.subject_two:
+                            edit_form_week_one.lesson_two.data = i.subject_two.subject_id
+                            edit_form_week_one.lesson_two_lecturer.data = i.subject_two.lecturer_id
+                        if i.subject_three:
+                            edit_form_week_one.lesson_three.data = i.subject_three.subject_id
+                            edit_form_week_one.lesson_three_lecturer.data = i.subject_three.lecturer_id
+                        if i.subject_four:
+                            edit_form_week_one.lesson_four.data = i.subject_four.subject_id
+                            edit_form_week_one.lesson_four_lecturer.data = i.subject_four.lecturer_id
+                        if i.subject_five:
+                            edit_form_week_one.lesson_five.data = i.subject_five.subject_id
+                            edit_form_week_one.lesson_five_lecturer.data = i.subject_five.lecturer_id
+                        if i.subject_six:
+                            edit_form_week_one.lesson_six.data = i.subject_six.subject_id
+                            edit_form_week_one.lesson_six_lecturer.data = i.subject_six.lecturer_id
+                    if i.week == 2:
+                        if i.subject_one:
+                            edit_form_week_two.lesson_one.data = i.subject_one.subject_id
+                            edit_form_week_two.lesson_one_lecturer.data = i.subject_one.lecturer_id
+                        if i.subject_two:
+                            edit_form_week_two.lesson_two.data = i.subject_two.subject_id
+                            edit_form_week_two.lesson_two_lecturer.data = i.subject_two.lecturer_id
+                        if i.subject_three:
+                            edit_form_week_two.lesson_three.data = i.subject_three.subject_id
+                            edit_form_week_two.lesson_three_lecturer.data = i.subject_three.lecturer_id
+                        if i.subject_four:
+                            edit_form_week_two.lesson_four.data = i.subject_four.subject_id
+                            edit_form_week_two.lesson_four_lecturer.data = i.subject_four.lecturer_id
+                        if i.subject_five:
+                            edit_form_week_two.lesson_five.data = i.subject_five.subject_id
+                            edit_form_week_two.lesson_five_lecturer.data = i.subject_five.lecturer_id
+                        if i.subject_six:
+                            edit_form_week_two.lesson_six.data = i.subject_six.subject_id
+                            edit_form_week_two.lesson_six_lecturer.data = i.subject_six.lecturer_id
+
+        return render_template('admin_timetable.html', form=form, edit_form_week_one=edit_form_week_one,
+                               edit_form_week_two=edit_form_week_two, data=Lecturer)
+    else:
+        return render_template('admin_timetable.html', form=form)
 
 
 @app.route('/admin/<string:what>/update/<int:id>', methods=['GET', 'POST'])
@@ -114,7 +197,7 @@ def admin_update(what, id):
             Specialty.update(tmp)
             flash(u'Спеціальність успішно оновлено!')
             return redirect_back('admin_specialty')
-        elif request.method=='POST':
+        elif request.method == 'POST':
             next = get_redirect_target()
             return render_template('admin_update.html', form=form, type=what, id=id, next=next)
         else:
@@ -130,7 +213,7 @@ def admin_update(what, id):
             Subject.update(tmp)
             flash(u'Предмет успішно оновлено!')
             return redirect_back('admin_subject')
-        elif request.method=='POST':
+        elif request.method == 'POST':
             next = get_redirect_target()
             return render_template('admin_update.html', form=form, type=what, id=id, next=next)
         else:
@@ -139,7 +222,7 @@ def admin_update(what, id):
             return render_template('admin_update.html', form=form, type=what, id=id, next=next)
     if what == 'group':
         form = GroupForm()
-        form.group_specialty.choices=[(h.id,h.long_form)for h in Specialty.get_all()]
+        form.group_specialty.choices = [(h.id, h.long_form) for h in Specialty.get_all()]
         tmp = Group.get_by_id(id)
         if form.validate_on_submit():
             tmp.group_number = form.group_number.data
@@ -148,18 +231,18 @@ def admin_update(what, id):
             Group.update(tmp)
             flash(u'Групу упішно оновлено!')
             return redirect_back('admin_group')
-        elif request.method=='POST':
+        elif request.method == 'POST':
             next = get_redirect_target()
-            return render_template('admin_update.html',form=form, type=what, id=id, next=next)
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
         else:
             form.group_number.data = tmp.group_number
             form.group_course.data = tmp.group_course
             form.group_specialty.data = tmp.specialty_id
             next = get_redirect_target()
-            return render_template('admin_update.html',form=form, type=what, id=id, next=next)
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
     if what == 'lecturer':
         form = LecturerForm()
-        form.lessons.choices = [(h.id,h.title)for h in Subject.get_all()]
+        form.lessons.choices = [(h.id, h.title) for h in Subject.get_all()]
         tmp = Lecturer.get_by_id(id)
 
         if form.validate_on_submit():
@@ -167,19 +250,19 @@ def admin_update(what, id):
             tmp.middle_name = form.middle_name.data
             tmp.last_name = form.last_name.data
             Lecturer.update(tmp)
-            Lessons.add(id,form.lessons.data)
+            Lessons.add(id, form.lessons.data)
             flash(u'Дані викладача успішно оновлено!')
             return redirect_back('admin_lecturer')
-        elif request.method =='POST':
+        elif request.method == 'POST':
             next = get_redirect_target()
-            return render_template('admin_update.html',form = form,type=what,id=id,next = next)
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
         else:
             form.lessons.data = [h.id for h in tmp.subjects]
             form.first_name.data = tmp.first_name
             form.middle_name.data = tmp.middle_name
             form.last_name.data = tmp.last_name
-            next=get_redirect_target()
-            return render_template('admin_update.html',form = form,type=what,id=id,next = next)
+            next = get_redirect_target()
+            return render_template('admin_update.html', form=form, type=what, id=id, next=next)
 
 
 @app.route('/admin/<string:what>/delete/<int:id>')
@@ -203,13 +286,13 @@ def admin_delete(what, id):
         return redirect(url_for('admin_lecturer'))
 
 
-@app.route('/admin/groups',methods=['GET','POST'])
+@app.route('/admin/groups', methods=['GET', 'POST'])
 @login_required
 def admin_group():
     form = GroupForm()
-    form.group_specialty.choices=[(h.id,h.long_form)for h in Specialty.get_all()]
+    form.group_specialty.choices = [(h.id, h.long_form) for h in Specialty.get_all()]
     if form.validate_on_submit():
-        Group.add(form.group_number.data,form.group_course.data,form.group_specialty.data)
+        Group.add(form.group_number.data, form.group_course.data, form.group_specialty.data)
         flash(u'Спеціальність успішно додано')
         return redirect_back('admin_group')
     return render_template('admin_group.html', data=Group.get_all(), form=form)
@@ -230,14 +313,14 @@ def admin_specialty():
 @login_required
 def admin_lecturer():
     form = LecturerForm()
-    form.lessons.choices = [(h.id,h.title)for h in Subject.get_all()]
+    form.lessons.choices = [(h.id, h.title) for h in Subject.get_all()]
     if form.validate_on_submit():
-        Lecturer.add(form.first_name.data,form.middle_name.data,form.last_name.data)
-        id = Lecturer.get_id_by_strict_name(form.first_name.data,form.middle_name.data,form.last_name.data)
-        Lessons.add(id,form.lessons.data)
-        flash(u'Викладача '+form.last_name.data+' '+form.first_name.data+u' успішно додано!')
-        return  redirect_back('admin_lecturer')
-    return render_template('admin_lecturer.html', data=Lecturer.get_all(),form=form)
+        Lecturer.add(form.first_name.data, form.middle_name.data, form.last_name.data)
+        id = Lecturer.get_id_by_strict_name(form.first_name.data, form.middle_name.data, form.last_name.data)
+        Lessons.add(id, form.lessons.data)
+        flash(u'Викладача ' + form.last_name.data + ' ' + form.first_name.data + u' успішно додано!')
+        return redirect_back('admin_lecturer')
+    return render_template('admin_lecturer.html', data=Lecturer.get_all(), form=form)
 
 
 @app.route('/admin/subject', methods=['GET', 'POST'])

@@ -1,0 +1,126 @@
+{% extends 'admin.html' %}
+{% from 'marcos.html' import render_field %}
+{% block container %}
+    <div class="panel panel-primary">
+        <table class="table">
+            <thead>
+            <tr>
+                <th style="width: 40%" class="text-center">Група</th>
+                <th style="width: 40%" class="text-center">День тижня</th>
+                <th style="width: 20%" class="text-center"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {#            Додавання нового            #}
+            <tr>
+                <form method="get" action="{{ url_for('admin_timetable') }}">
+                    <input type=hidden value="{{ next or '' }}" name=next>
+                    {{ form.csrf_token }}
+                    {{ form.hidden_tag() }}
+
+                    <td>{{ render_field(form.group,False,class='chosen') }}</td>
+                    <td>{{ render_field(form.day,False,class='chosen') }}</td>
+                    <td colspan='2'>
+                        <div class="form-group"><a
+                                href="{{ url_for('admin_timetable',edit = "yes") }}"> {{ form.submit(style="padding:0.6em;text-aligh:center;",class="btn-primary btn btn-group-justified btn-slim") }}</a>
+                        </div>
+                        <input type=hidden value="{{ next or '' }}" name=next>
+                        <input type=hidden value="yes" name=edit>
+                    </td>
+                </form>
+            </tr>
+            </tbody>
+        </table>
+        {% if edit_form_week_one %}
+            <div class="row row-centered">
+                <div class="col-lg-10 col-centered">
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width: 50%;text-align: right">Перший</th>
+                            <th style="width: 50%;text-align: left">тиждень</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <form method="post" action="{{ url_for('admin_timetable') }}">
+                            {{ edit_form_week_one.csrf_token }}
+                            {{ edit_form_week_one.hidden_tag() }}
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_one,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_one_lecturer,class='chosen week_one',**{'data-week':'one'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_two,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_two_lecturer,class='chosen',**{'data-week':'one'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_three,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_three_lecturer,class='chosen',**{'data-week':'one'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_four,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_four_lecturer,class='chosen',**{'data-week':'one'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_five,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_five_lecturer,class='chosen',**{'data-week':'one'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_six,class='chosen lesson',**{'data-week':'one'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_one.lesson_six_lecturer,class='chosen',**{'data-week':'one'}) }}</td>
+                            </tr>
+                        </form>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width: 50%;text-align: right">Другий</th>
+                            <th style="width: 50%;text-align: left">тиждень</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <form method="post" action="{{ url_for('admin_timetable') }}">
+                            {{ edit_form_week_two.csrf_token }}
+                            {{ edit_form_week_two.hidden_tag() }}
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_one,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_one_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_two,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_two_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_three,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_three_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_four,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_four_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_five,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_five_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_six,class='chosen lesson',**{'data-week':'two'}) }}</td>
+                                <td style="padding:0 40px"> {{ render_field(edit_form_week_two.lesson_six_lecturer,class='chosen',**{'data-week':'two'}) }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <button style="margin-top: 2em" type="submit"
+                                            class="btn btn-slim btn-warning btn-group-justified">Зберегти
+                                    </button>
+                                </td>
+                            </tr>
+                        </form>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
