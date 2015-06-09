@@ -51,11 +51,10 @@ class LecturerForm(Form):
 
 class TimeTable(Form):
     group = SelectField(u'Група', coerce=int)
-    day = SelectField(u'День тижня', coerce=str,
+    day = SelectField(u'День тижня',
                       choices=[('monday', u'Понеділок'), ('tuesday', u'Вівторок'), ('wednesday', u'Середа'),
                                ('thursday', u'Четверг'), ('friday', u'П’ятниця'), ('saturday', u'Субота')],
                       validators=[Optional()])
-    submit = SubmitField(u'Редагувати')
 
 
 class EditForm(Form):
@@ -73,20 +72,38 @@ class EditForm(Form):
         lch = []
     lch.insert(0, (0, u'Відсутній'))
 
-    lesson_one = SelectField(u'Перший урок', choices=ch, coerce=int)
-    lesson_one_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_one = SelectField(u'Перший урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_one_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
-    lesson_two = SelectField(u'Другий урок', choices=ch, coerce=int)
-    lesson_two_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_two = SelectField(u'Другий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_two_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
-    lesson_three = SelectField(u'Третій урок', choices=ch, coerce=int)
-    lesson_three_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_three = SelectField(u'Третій урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_three_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
-    lesson_four = SelectField(u'Четвертий урок', choices=ch, coerce=int)
-    lesson_four_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_four = SelectField(u'Четвертий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_four_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
-    lesson_five = SelectField(u'П’ятий урок', choices=ch, coerce=int)
-    lesson_five_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_five = SelectField(u'П’ятий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_five_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
-    lesson_six = SelectField(u'Шостий урок', choices=ch, coerce=int)
-    lesson_six_lecturer = SelectField(lecturer, choices=lch, coerce=int)
+    one_lesson_six = SelectField(u'Шостий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    one_lesson_six_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_one = SelectField(u'Перший урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_one_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_two = SelectField(u'Другий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_two_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_three = SelectField(u'Третій урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_three_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_four = SelectField(u'Четвертий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_four_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_five = SelectField(u'П’ятий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_five_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+    two_lesson_six = SelectField(u'Шостий урок', choices=ch, coerce=int,validators=[DataRequired()])
+    two_lesson_six_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])

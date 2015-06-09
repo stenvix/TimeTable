@@ -5,14 +5,15 @@ import datetime
 
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g, jsonify
-from models import Group, Specialty, Subject, Lecturer, User, Lessons
+from models import Group, Specialty, User, Lessons, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
 from forms import *
 from flask.ext.login import login_user, login_required, logout_user
 from urlparse import urlparse, urljoin
+from num2words import num2words
 
 
 def get_week():
-    start = datetime.date(datetime.date.today().year - 1, 9, 1);
+    start = datetime.date(datetime.date.today().year - 1, 9, 1)
     start_week = start.isocalendar()[1]
     now = datetime.date.today()
     now_week = now.isocalendar()[1]
@@ -103,7 +104,7 @@ def admin_rest(subject):
     return jsonify(result=[(h.serialize) for h in Lessons.get_by_subject(subject)])
 
 
-@app.route('/admin/timetable')
+@app.route('/admin/timetable', methods=['GET', 'POST'])
 @login_required
 def admin_timetable():
     form = TimeTable()
@@ -117,70 +118,87 @@ def admin_timetable():
                     h.group_course == index])
         choises.append(tmp)
         index += 1
-    # print choises
     form.group.choices = choises
+    edit = EditForm()
 
-    group = request.args.get('group')
-    day = request.args.get('day')
-    if group:
-        form.group.data = int(group)
-    else:
-        form.group.data = 0
-    if day:
-        form.day.data = day
-    else:
-        form.day.data = 0
-    if request.args.get('edit') == 'yes' and form.group.data != 'None' and form.day.data != 'None':
-        edit_form_week_one = EditForm()
-        edit_form_week_two = EditForm()
+    if form.validate_on_submit():
+        group = form.group.data
+        day = form.day.data
         item = None
-        if group:
+        if group or group != 'None':
             item = Group.get_by_id(group)
-        if day:
+        if day or day != 'None':
             item_day = getattr(item, day)
             if item_day != []:
                 for i in item_day:
                     if i.week == 1:
                         if i.subject_one:
-                            edit_form_week_one.lesson_one.data = i.subject_one.subject_id
-                            edit_form_week_one.lesson_one_lecturer.data = i.subject_one.lecturer_id
+                            edit.one_lesson_one.data = i.subject_one.subject_id
+                            edit.one_lesson_one_lecturer.data = i.subject_one.lecturer_id
                         if i.subject_two:
-                            edit_form_week_one.lesson_two.data = i.subject_two.subject_id
-                            edit_form_week_one.lesson_two_lecturer.data = i.subject_two.lecturer_id
+                            edit.one_lesson_two.data = i.subject_two.subject_id
+                            edit.one_lesson_two_lecturer.data = i.subject_two.lecturer_id
                         if i.subject_three:
-                            edit_form_week_one.lesson_three.data = i.subject_three.subject_id
-                            edit_form_week_one.lesson_three_lecturer.data = i.subject_three.lecturer_id
+                            edit.one_lesson_three.data = i.subject_three.subject_id
+                            edit.one_lesson_three_lecturer.data = i.subject_three.lecturer_id
                         if i.subject_four:
-                            edit_form_week_one.lesson_four.data = i.subject_four.subject_id
-                            edit_form_week_one.lesson_four_lecturer.data = i.subject_four.lecturer_id
+                            edit.one_lesson_four.data = i.subject_four.subject_id
+                            edit.one_lesson_four_lecturer.data = i.subject_four.lecturer_id
                         if i.subject_five:
-                            edit_form_week_one.lesson_five.data = i.subject_five.subject_id
-                            edit_form_week_one.lesson_five_lecturer.data = i.subject_five.lecturer_id
+                            edit.one_lesson_five.data = i.subject_five.subject_id
+                            edit.one_lesson_five_lecturer.data = i.subject_five.lecturer_id
                         if i.subject_six:
-                            edit_form_week_one.lesson_six.data = i.subject_six.subject_id
-                            edit_form_week_one.lesson_six_lecturer.data = i.subject_six.lecturer_id
+                            edit.one_lesson_six.data = i.subject_six.subject_id
+                            edit.one_lesson_six_lecturer.data = i.subject_six.lecturer_id
                     if i.week == 2:
                         if i.subject_one:
-                            edit_form_week_two.lesson_one.data = i.subject_one.subject_id
-                            edit_form_week_two.lesson_one_lecturer.data = i.subject_one.lecturer_id
+                            edit.two_lesson_one.data = i.subject_one.subject_id
+                            edit.two_lesson_one_lecturer.data = i.subject_one.lecturer_id
                         if i.subject_two:
-                            edit_form_week_two.lesson_two.data = i.subject_two.subject_id
-                            edit_form_week_two.lesson_two_lecturer.data = i.subject_two.lecturer_id
+                            edit.two_lesson_two.data = i.subject_two.subject_id
+                            edit.two_lesson_two_lecturer.data = i.subject_two.lecturer_id
                         if i.subject_three:
-                            edit_form_week_two.lesson_three.data = i.subject_three.subject_id
-                            edit_form_week_two.lesson_three_lecturer.data = i.subject_three.lecturer_id
+                            edit.two_lesson_three.data = i.subject_three.subject_id
+                            edit.two_lesson_three_lecturer.data = i.subject_three.lecturer_id
                         if i.subject_four:
-                            edit_form_week_two.lesson_four.data = i.subject_four.subject_id
-                            edit_form_week_two.lesson_four_lecturer.data = i.subject_four.lecturer_id
+                            edit.two_lesson_four.data = i.subject_four.subject_id
+                            edit.two_lesson_four_lecturer.data = i.subject_four.lecturer_id
                         if i.subject_five:
-                            edit_form_week_two.lesson_five.data = i.subject_five.subject_id
-                            edit_form_week_two.lesson_five_lecturer.data = i.subject_five.lecturer_id
+                            edit.two_lesson_five.data = i.subject_five.subject_id
+                            edit.two_lesson_five_lecturer.data = i.subject_five.lecturer_id
                         if i.subject_six:
-                            edit_form_week_two.lesson_six.data = i.subject_six.subject_id
-                            edit_form_week_two.lesson_six_lecturer.data = i.subject_six.lecturer_id
-
-        return render_template('admin_timetable.html', form=form, edit_form_week_one=edit_form_week_one,
-                               edit_form_week_two=edit_form_week_two, data=Lecturer)
+                            edit.two_lesson_six.data = i.subject_six.subject_id
+                            edit.two_lesson_six_lecturer.data = i.subject_six.lecturer_id
+            return render_template('admin_timetable.html', form=form, edit=edit)
+    elif request.method == 'POST' and edit.data:
+        day = None
+        group = None
+        try:
+            day = request.args.get('day')
+            group = int(request.args.get('group'))
+        except ValueError:
+            pass
+        if group != None and day != None:
+            lessons = globals().get(day.capitalize()).get_by_group(group)
+            while len(lessons) < 2:
+                lessons.append(globals().get(day.capitalize())(week=len(lessons) + 1, group_id=group))
+            for item in lessons:
+                for i in range(1, 7):
+                    if item.week == 1:
+                        setattr(item, 'lesson_' + num2words(i), Lessons.get_id(
+                            getattr(edit, unicode(num2words(1)) + '_lesson_' + unicode(num2words(i))).data,
+                            getattr(edit, unicode(num2words(1)) + '_lesson_' + unicode(num2words(i)) + unicode(
+                                '_lecturer')).data))
+                    if item.week == 2:
+                        setattr(item, 'lesson_' + num2words(i), Lessons.get_id(
+                            getattr(edit, unicode(num2words(2)) + '_lesson_' + unicode(num2words(i))).data,
+                            getattr(edit, unicode(num2words(2)) + '_lesson_' + unicode(num2words(i)) + unicode(
+                                '_lecturer')).data))
+                    globals().get(day.capitalize()).update(item)
+            flash(u'Розклад успішно оновлено')
+            form.day.errors = None
+            form.group.errors = None
+        return render_template('admin_timetable.html', form=form)
     else:
         return render_template('admin_timetable.html', form=form)
 
@@ -366,7 +384,6 @@ def search():
             elif n == 'subject':
                 if text.isalnum():
                     return render_template('search_result.html', type=n, data=Subject.get_by_substring(text), text=text)
-            print(g.search_form.text.data)
             return redirect(url_for('index'))
         return redirect(url_for('group_timetable', group_number=427, week=get_week()))
 
