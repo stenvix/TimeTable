@@ -175,6 +175,13 @@ class Lessons(db.Model):
     @staticmethod
     def get_by_subject(subject_id):
         return Lessons.query.filter_by(subject_id=subject_id).all()
+    @staticmethod
+    def get_id(subject_id,lecturer_id):
+        id = None
+        if subject_id!=0 and lecturer_id!=0:
+                tmp = Lessons.query.filter(Lessons.subject_id == subject_id, Lessons.lecturer_id == lecturer_id).first()
+                id = tmp.id
+        return id
 
     @staticmethod
     def add(lecturer_id, subjects):
@@ -211,6 +218,7 @@ class Subject(db.Model):
     @staticmethod
     def get_by_title(title):
         return Subject.query.filter_by(title=title).first()
+
 
     @staticmethod
     def get_by_substring(text):
@@ -307,6 +315,55 @@ class Day(object):
         return cls.__name__.lower()
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # def __init__(self,week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six):
+    #     self.week = week
+    #     self.group_id = group_id
+    #     self.lesson_one = lesson_one
+    #     self.lesson_two = lesson_two
+    #     self.lesson_three = lesson_three
+    #     self.lesson_four = lesson_four
+    #     self.lesson_five = lesson_five
+    #     self.lesson_six = lesson_six
+
+    @staticmethod
+    def add(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six):
+        # try:
+        #     one = int(lesson_one)
+        # except ValueError:
+        #     one=None
+        # try:
+        #     two = int(lesson_two)
+        # except ValueError:
+        #     two = None
+        # try:
+        #     three = int(lesson_three)
+        # except ValueError:
+        #     three = None
+        # try:
+        #     four = int(lesson_four)
+        # except ValueError:
+        #     four = None
+        # try:
+        #     five = int(lesson_five)
+        # except ValueError:
+        #     five = None
+        # try:
+        #     six = int(lesson_six)
+        # except ValueError:
+        #     six = None
+
+        db.session.add(Monday(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six))
+        db.session.commit()
+
+    @classmethod
+    def update(cls,item):
+        db.session.add(item)
+        db.session.commit()
+    @classmethod
+    def get_by_group(cls,group_id):
+        return cls.query.filter(cls.group_id==group_id).all()
+
 
     @declared_attr
     def week(cls):

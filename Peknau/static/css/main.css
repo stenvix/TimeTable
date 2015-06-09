@@ -73,4 +73,6 @@ td {
 .btn-slim{
     padding: 0.5em!important;
 }
-
+.ch-error{
+    border: 1px solid red;
+}
