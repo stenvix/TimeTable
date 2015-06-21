@@ -2,9 +2,9 @@
 __author__ = 'stepanov'
 from models import Subject, Lecturer
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, SubmitField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField,DateTimeField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional
-from wtforms_components import SelectMultipleField, SelectField
+from wtforms_components import SelectMultipleField, SelectField,DateField
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -107,3 +107,14 @@ class EditForm(Form):
 
     two_lesson_six = SelectField(u'Шостий урок', choices=ch, coerce=int,validators=[DataRequired()])
     two_lesson_six_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
+
+class ReplacementForm(Form):
+    group = SelectField(u'Група')
+
+    start = DateTimeField(u'Дата заміни')
+    start_lesson = StringField(u'Пара')
+    start_subject = SelectField(u'Предмет',choices=[])
+
+    finish = DateTimeField(u'Дата перенесення')
+    finish_lesson = SelectField(u'Пара',choices=[(1,u'1 пара'),(2,u'2 пара'),(3,u'3 пара'),(4,u'4 пара'),(5,u'5 пара'),(6,u'6 пара')])
+    finish_subject = SelectField(u'Перенесено на',choices=[])

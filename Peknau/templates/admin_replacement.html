@@ -1,0 +1,60 @@
+{% extends 'admin.html' %}
+{% from 'marcos.html' import render_field %}
+{% block container %}
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="text-center" style="width: 25%">{{ form.group.label }}</th>
+            <th class="text-center" style="width: 25%">{{ form.start.label }} </br> {{ form.start_subject.label }}</th>
+            <th class="text-center" style="width: 25%">{{ form.finish.label }} </br> {{ form.finish_subject.label }}</th>
+        </tr>
+        </thead>
+        <form method="post" action="{{ url_for('admin_replacement') }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+        <tbody>
+        <tr>
+               <td>
+
+                <div class="form-group">
+                      {{ form.group(class='chosen') }}
+                    {{ form.start_lesson(style='visibility:hidden;position: absolute;') }}
+                    </div>
+                </div>
+            </td>
+            <td >
+                <div class="form-group">
+                    <div class='input-group date'>
+                        {{ form.start(class="form-control", id='startDate') }}
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                    </div>
+                </div>
+
+                <div class="form-group"> {{ form.start_subject(class='form-control') }}</div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <div class='input-group date'>
+                        {{ form.finish(class="form-control", id='finishDate') }}
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                    </div>
+                </div>
+                <div class="form-group"> {{ form.finish_lesson(class='form-control') }}</div>
+                <div class="form-group"> {{ form.finish_subject(class='form-control') }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="submit" class="btn btn-primary">Зберегти</button></td>
+            <td></td>
+        </tr>
+        </tbody>
+        </form>
+    </table>
+    </div>
+{% endblock %}

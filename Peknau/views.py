@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-__author__ = 'gareth'
 
-import datetime
+__author__ = 'gareth'
 
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g, jsonify
@@ -10,10 +9,12 @@ from forms import *
 from flask.ext.login import login_user, login_required, logout_user
 from urlparse import urlparse, urljoin
 from num2words import num2words
+import datetime
 
 
-def get_week():
-    start = datetime.date(datetime.date.today().year - 1, 9, 1)
+def get_week(start=None):
+    if not start:
+        start = datetime.date(datetime.date.today().year - 1, 9, 1)
     start_week = start.isocalendar()[1]
     now = datetime.date.today()
     now_week = now.isocalendar()[1]
@@ -69,6 +70,9 @@ def login():
                 return redirect(request.form['next'])
             else:
                 return redirect(url_for('admin'))
+        else:
+            form.password.errors.append(u'Логін або пароль не вірні')
+            form.username.errors.append('')
 
     return render_template('login.html', form=form)
 
@@ -87,7 +91,18 @@ def group_timetable(group_number):
             week = get_week()
         else:
             week = int(request.args.get('week'))
-        return render_template('timetable.html', group=Group.get_group_by_number(group_number), week=week,
+
+        group = Group.get_group_by_number(group_number)
+        if group.replacement:
+            for item in group.replacement:
+                if item.start_subject > 0:
+                    item.start_subject = Subject.get_by_id(item.start_subject).title
+            if item.finish_subject > 0:
+                item.finish_subject = Subject.get_by_id(item.finish_subject).title
+            else:
+                item.finish_subject = unicode(item.finish_subject * -1) + u' пара'
+
+        return render_template('timetable.html', group=group, week=week,
                                day=datetime.date.today().weekday())
     return redirect(url_for('index'))
 
@@ -95,7 +110,7 @@ def group_timetable(group_number):
 @app.route('/admin')
 @login_required
 def admin():
-    return render_template('admin.html')
+    return render_template('base.html')
 
 
 @app.route('/admin/rest/<int:subject>')
@@ -386,6 +401,60 @@ def search():
                     return render_template('search_result.html', type=n, data=Subject.get_by_substring(text), text=text)
             return redirect(url_for('index'))
         return redirect(url_for('group_timetable', group_number=427, week=get_week()))
+
+
+@app.route('/admin/replacement')
+@login_required
+def admin_replacement():
+    form = ReplacementForm()
+    choises = []
+    courses = [u'Перший курс', u'Другий курс', u'Третій курс', u'Четвертий', u'Бакалаврат']
+    index = 1
+    for j in courses:
+        tmp = [j]
+        tmp.append([(h.id, unicode(h.group_number) + '-' + h.specialty.short_form) for h in Group.get_all() if
+                    h.group_course == index])
+        choises.append(tmp)
+        index += 1
+    form.group.choices = choises
+    return render_template('admin_replacement.html', form=form)
+
+
+@app.route('/admin/replacement/get', )
+@login_required
+def admin_replacement_get():
+    group = None
+    date = None
+    try:
+        group = int(request.args.get('group'))
+    except ValueError:
+        return 'Value Error', 400
+    getted = datetime.datetime.strptime(request.args.get('date'), "%d-%m-%Y").date()
+    week = get_week(getted)
+    lessons = globals().get(getted.strftime('%A'))
+    answer = []
+    if lessons:
+        lessons = lessons.get_by_group(group)
+        for item in lessons:
+            if item.week == week:
+                for i in range(0, 7):
+                    if i == 0:
+                        answer.append(({'id': 0,
+                                        'value': 'Не визначено'}))
+                        continue
+                    if getattr(item, 'subject_' + unicode(num2words(i))) != None:
+                        answer.append(({'id': getattr(item, 'subject_' + unicode(num2words(i))).id,
+                                        'value': unicode(i) + '. ' + getattr(item, 'subject_' + unicode(
+                                            num2words(i))).subject.title + '(' + getattr(item, 'subject_' + unicode(
+                                            num2words(i))).lecturer.last_name + ' ' +
+                                                 getattr(item, 'subject_' + unicode(num2words(i))).lecturer.first_name[
+                                                     0] + '. ' +
+                                                 getattr(item, 'subject_' + unicode(num2words(i))).lecturer.middle_name[
+                                                     0] + '.)'}))
+                    else:
+                        answer.append(({'id': i * -1, 'value': unicode(i) + u' пара'}))
+
+    return jsonify(result=answer)
 
 
 @app.errorhandler(404)

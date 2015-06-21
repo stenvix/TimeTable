@@ -9,11 +9,17 @@
 }
 
 /* Medium devices (desktops, 992px and up) */
-@media (min-width: @screen-md-min) {
+@media (min-width: 920px) {
+ #bs-example-navbar-collapse-1{
+    margin-left: 30%!important;
+    }
 }
 
 /* Large devices (large desktops, 1200px and up) */
-@media (min-width: @screen-lg-min) {
+@media (min-width: 1030px) {
+     #bs-example-navbar-collapse-1{
+    margin-left: 38%!important;
+    }
 }
 
 table {
@@ -42,11 +48,20 @@ td {
     text-align: center;
 }
 
-.table thead {
+.table-bordered thead {
     background-color: #2780E3;
     color: #ffffff;
 }
 
+.table-bordered thead button:hover{
+    background-color: #2780E3;
+    color: #ffffff;
+}
+.bootstrap-datetimepicker-widget thead {
+    background: #ffffff!important;
+    color: #000;
+
+}
 .table thead th {
     text-align: center;
     border: none !important;
@@ -73,6 +88,6 @@ td {
 .btn-slim{
     padding: 0.5em!important;
 }
-.ch-error{
+.ch-error {
     border: 1px solid red;
 }

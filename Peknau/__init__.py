@@ -10,6 +10,7 @@ import os
 
 # Main app settings
 app = Flask(__name__)
+
 app.debug = True
 #security
 csrf = CsrfProtect()
@@ -37,3 +38,4 @@ def is_list(value):
     return isinstance(value, list)
 app.jinja_env.filters['reverse'] = is_list
 app.jinja_env.globals.update(get_week=views.get_week())
+

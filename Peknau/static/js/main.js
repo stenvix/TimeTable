@@ -74,7 +74,7 @@ jQuery(document).ready(function () {
 });
 jQuery(document).ready(function () {
 
-    jQuery("#form-timetable").submit(function(){
+    jQuery("#form-timetable").submit(function () {
         var status = true;
         jQuery("select.lesson").each(function (i, item) {
             if (jQuery(item).val() != 0) {
@@ -89,10 +89,55 @@ jQuery(document).ready(function () {
                 })
             }
         });
-        if( status == false){
+        if (status == false) {
             alert('Помилка, заповніть всі поля')
         }
         return status;
     })
 });
 
+jQuery(document).ready(function () {
+    jQuery('#finishDate').datepicker({
+        minDate: new Date(),
+        dateFormat: "dd-mm-yy",
+        onSelect: function () {
+            jQuery.get("/admin/replacement/get", {group: jQuery('#group').val(), date: this.value})
+                .success(function (data) {
+                    if( data.result.length > 0){
+                        jQuery('#finish_subject').html('');
+                        jQuery.each(data.result,function(i,item){
+                            if (jQuery('#start_subject').val() != item.id && jQuery('#start_subject').val()!=0)
+                                jQuery('#finish_subject').append(new Option(item.value,item.id) ).trigger("chosen:updated");
+                            else{
+                                jQuery('#finish_subject').append(jQuery(new Option(item.value,item.id)).attr('disabled', true) ).trigger("chosen:updated");
+                            }
+                        })
+                    }
+                }).error(function (data) {
+                    alert('Помилка з’єднання з сервером')
+                });
+        },
+        regional: "ru"
+    });
+    jQuery.datepicker.setDefaults($.datepicker.regional["uk"]);
+    jQuery('#startDate').datepicker({
+        onSelect: function () {
+            jQuery.get("/admin/replacement/get", {group: jQuery('#group').val(), date: this.value})
+                .success(function (data) {
+                    if( data.result.length > 0){
+                        jQuery('#start_subject').html('');
+                        jQuery.each(data.result,function(i,item){
+                            if ( item.id > 0)
+                            jQuery('#start_subject').append(new Option(item.value,item.id)).trigger("chosen:updated");
+                        })
+                    }
+                }).error(function (data) {
+                    alert('Помилка з’єднання з сервером')
+                });
+            jQuery("#finishDate").datepicker("option", "minDate", this.value);
+        },
+        minDate: new Date(),
+        dateFormat: "dd-mm-yy",
+        regional: "ru"
+    });
+});

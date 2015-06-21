@@ -5,7 +5,6 @@ __author__ = 'Stepanov Valentin'
 from Peknau import db, login_manager
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref
-from sqlalchemy import not_
 from datetime import datetime
 
 
@@ -316,43 +315,8 @@ class Day(object):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # def __init__(self,week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six):
-    #     self.week = week
-    #     self.group_id = group_id
-    #     self.lesson_one = lesson_one
-    #     self.lesson_two = lesson_two
-    #     self.lesson_three = lesson_three
-    #     self.lesson_four = lesson_four
-    #     self.lesson_five = lesson_five
-    #     self.lesson_six = lesson_six
-
     @staticmethod
     def add(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six):
-        # try:
-        #     one = int(lesson_one)
-        # except ValueError:
-        #     one=None
-        # try:
-        #     two = int(lesson_two)
-        # except ValueError:
-        #     two = None
-        # try:
-        #     three = int(lesson_three)
-        # except ValueError:
-        #     three = None
-        # try:
-        #     four = int(lesson_four)
-        # except ValueError:
-        #     four = None
-        # try:
-        #     five = int(lesson_five)
-        # except ValueError:
-        #     five = None
-        # try:
-        #     six = int(lesson_six)
-        # except ValueError:
-        #     six = None
-
         db.session.add(Monday(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six))
         db.session.commit()
 
@@ -360,6 +324,7 @@ class Day(object):
     def update(cls,item):
         db.session.add(item)
         db.session.commit()
+
     @classmethod
     def get_by_group(cls,group_id):
         return cls.query.filter(cls.group_id==group_id).all()
@@ -455,3 +420,14 @@ class Friday(Day, db.Model):
 
 class Saturday(Day, db.Model):
     pass
+
+class Replacement(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    group_id = db.Column(db.Integer,db.ForeignKey('group.id'))
+    start = db.Column(db.Date)
+    start_lesson = db.Column(db.Integer)
+    start_subject = db.Column(db.Integer,db.ForeignKey('subject.id'))
+    finish = db.Column(db.Date)
+    finish_lesson = db.Column(db.Integer)
+    finish_subject = db.Column(db.Integer,db.ForeignKey('subject.id'))
+    group = db.relationship('Group',backref ='replacement')

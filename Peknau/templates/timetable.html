@@ -7,7 +7,35 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row row-centered">
-            <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
+        <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12 col-centered">
+            {% if group.replacement %}
+                <table class="table-responsive table-condensed table-bordered table table-primary">
+                <thead>
+                <tr><th colspan="6" class="btn-update">Заміни</th></tr>
+                <tr>
+                    <th>Дата заміни</th>
+                    <th>Пара</th>
+                    <th>Дисципліна</th>
+                    <th>Перенесено на</th>
+                    <th>Пара</th>
+                    <th>Дисципліна</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    {% for item in group.replacement %}
+                    <td>{{item.start.strftime('%d-%m-%Y')  }}</td>
+                        <td>4</td>
+                    <td>{{item.start_subject }} </br> <strong>Лещинський О.Л. </strong></td>
+                    <td>{{item.finish.strftime('%d-%m-%Y')  }}</td>
+                    <td>{{item.finish_lesson }} </td>
+                    <td>{{item.finish_subject }} </br> <strong>Юзюк О.О.</strong></td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+                </table>
+            {% endif %}
+
                 <ul class="nav nav-pills nav-justified" style="margin-bottom: 10px;">
                     <li role="presentation" {% if week==1 %} class="active" {% endif %}><a
                             href="{{ url_for('group_timetable',group_number=group.group_number,week='1') }}">Перший
