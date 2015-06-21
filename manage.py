@@ -154,7 +154,7 @@ def initdb():
         Saturday(week=2, group_id=Group.get_group_by_number(427).id))
 
     db.session.add(User(username='root',password='root',email='falken.ua@gmail.com'))
-    db.session.add(Replacement(group_id= 31,start = datetime.date(2015,06,15), start_subject = 1, finish = datetime.date(2015,06,17), finish_lesson = 4, finish_subject = 2))
+    # db.session.add(Replacement(group_id= 31,start = datetime.date(2015,06,15), start_subject = 1, finish = datetime.date(2015,06,17), finish_lesson = 4, finish_subject = 2))
 
     db.session.commit()
     print("Initialized the database")

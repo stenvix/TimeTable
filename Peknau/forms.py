@@ -109,12 +109,12 @@ class EditForm(Form):
     two_lesson_six_lecturer = SelectField(lecturer, choices=lch, coerce=int,validators=[DataRequired()])
 
 class ReplacementForm(Form):
-    group = SelectField(u'Група')
+    group = SelectField(u'Група',validators=[DataRequired(u'Виберіть групу')])
 
-    start = DateTimeField(u'Дата заміни')
+    start = DateField(u'Дата заміни',format=u'%d-%m-%Y')
     start_lesson = StringField(u'Пара')
     start_subject = SelectField(u'Предмет',choices=[])
 
-    finish = DateTimeField(u'Дата перенесення')
+    finish = DateField(u'Дата перенесення',format=u'%d-%m-%Y')
     finish_lesson = SelectField(u'Пара',choices=[(1,u'1 пара'),(2,u'2 пара'),(3,u'3 пара'),(4,u'4 пара'),(5,u'5 пара'),(6,u'6 пара')])
     finish_subject = SelectField(u'Перенесено на',choices=[])

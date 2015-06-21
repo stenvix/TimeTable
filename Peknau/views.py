@@ -4,7 +4,7 @@ __author__ = 'gareth'
 
 from Peknau import app
 from flask import render_template, flash, redirect, url_for, request, g, jsonify
-from models import Group, Specialty, User, Lessons, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+from models import Group, Specialty, User, Lessons, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Replacement
 from forms import *
 from flask.ext.login import login_user, login_required, logout_user
 from urlparse import urlparse, urljoin
@@ -96,11 +96,13 @@ def group_timetable(group_number):
         if group.replacement:
             for item in group.replacement:
                 if item.start_subject > 0:
-                    item.start_subject = Subject.get_by_id(item.start_subject).title
-            if item.finish_subject > 0:
-                item.finish_subject = Subject.get_by_id(item.finish_subject).title
-            else:
-                item.finish_subject = unicode(item.finish_subject * -1) + u' пара'
+                    pass
+                    # item.start_subject = .get_by_id(item.start_subject).title
+                if item.finish_subject > 0:
+                    pass
+                    # item.finish_subject = Subject.get_by_id(item.finish_subject).title
+                else:
+                    item.finish_subject = unicode(item.finish_subject * -1) + u' пара'
 
         return render_template('timetable.html', group=group, week=week,
                                day=datetime.date.today().weekday())
@@ -403,7 +405,7 @@ def search():
         return redirect(url_for('group_timetable', group_number=427, week=get_week()))
 
 
-@app.route('/admin/replacement')
+@app.route('/admin/replacement',methods=['GET','POST'])
 @login_required
 def admin_replacement():
     form = ReplacementForm()
@@ -417,10 +419,14 @@ def admin_replacement():
         choises.append(tmp)
         index += 1
     form.group.choices = choises
+    # form.finish_subject.choices = [(i.id,i.subject.title)for i in Lessons.get]
+    if request.method == 'POST':
+        Replacement.add(form.group.data,form.start.data,form.start_lesson.data,form.start_subject.data,form.finish.data,form.finish_lesson.data,form.finish_subject.data)
+        flash(u'Заміну здійснено!')
     return render_template('admin_replacement.html', form=form)
 
 
-@app.route('/admin/replacement/get', )
+@app.route('/admin/replacement/get')
 @login_required
 def admin_replacement_get():
     group = None
@@ -443,18 +449,40 @@ def admin_replacement_get():
                                         'value': 'Не визначено'}))
                         continue
                     if getattr(item, 'subject_' + unicode(num2words(i))) != None:
-                        answer.append(({'id': getattr(item, 'subject_' + unicode(num2words(i))).id,
+                        answer.append(({'id': getattr(item, 'lesson_' + unicode(num2words(i))),
                                         'value': unicode(i) + '. ' + getattr(item, 'subject_' + unicode(
                                             num2words(i))).subject.title + '(' + getattr(item, 'subject_' + unicode(
                                             num2words(i))).lecturer.last_name + ' ' +
                                                  getattr(item, 'subject_' + unicode(num2words(i))).lecturer.first_name[
                                                      0] + '. ' +
                                                  getattr(item, 'subject_' + unicode(num2words(i))).lecturer.middle_name[
-                                                     0] + '.)'}))
+                                                     0] + '.)',
+                                        'number': unicode(i) }))
                     else:
                         answer.append(({'id': i * -1, 'value': unicode(i) + u' пара'}))
 
     return jsonify(result=answer)
+
+@app.route('/admin/replacement/get_group')
+@login_required
+def admin_replacement_get_group():
+    group = None
+    try:
+        group = int(request.args.get('group'))
+    except ValueError:
+        return 'Value Error', 400
+    all = Group.get_all_subjects(group)
+    answer = []
+    for item in all:
+        check = True
+        for j in answer:
+            if item.id == j.get('id'):
+                check = False
+
+        if check:
+            answer.append(({'id':item.id,'value': item.subject.title}))
+
+    return jsonify(result = answer)
 
 
 @app.errorhandler(404)

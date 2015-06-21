@@ -22,16 +22,16 @@
                 </tr>
                 </thead>
                 <tbody>
+                {% for item in group.replacement %}
                 <tr>
-                    {% for item in group.replacement %}
                     <td>{{item.start.strftime('%d-%m-%Y')  }}</td>
-                        <td>4</td>
-                    <td>{{item.start_subject }} </br> <strong>Лещинський О.Л. </strong></td>
+                        <td>{{ item.start_lesson }}</td>
+                    <td>{{item.start_subject.subject.title }} </br> <strong>{{item.start_subject.lecturer.last_name }} {{item.start_subject.lecturer.first_name[0] }}.{{item.start_subject.lecturer.middle_name[0] }}.</strong></td>
                     <td>{{item.finish.strftime('%d-%m-%Y')  }}</td>
                     <td>{{item.finish_lesson }} </td>
-                    <td>{{item.finish_subject }} </br> <strong>Юзюк О.О.</strong></td>
-                    {% endfor %}
+                    <td>{{item.finish_subject.subject.title }} </br> <strong>{{item.finish_subject.lecturer.last_name }} {{item.finish_subject.lecturer.first_name[0] }}.{{item.finish_subject.lecturer.middle_name[0] }}.</strong></td>
                 </tr>
+                 {% endfor %}
                 </tbody>
                 </table>
             {% endif %}

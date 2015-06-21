@@ -6,7 +6,7 @@ from Peknau import db, login_manager
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import backref
 from datetime import datetime
-
+from num2words import num2words
 
 class User(db.Model):
     __tablename__ = "users"
@@ -110,6 +110,17 @@ class Group(db.Model):
     def get_by_number_and_specialty(number, specialty):
         return Group.query.join(Specialty).filter(Group.group_number.like('%' + number + '%'),
                                                   Specialty.short_form.like('%' + specialty.upper() + '%')).all()
+    @staticmethod
+    def get_all_subjects(group_id):
+        lessons = []
+        group = Group.get_by_id(group_id)
+        days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        for day in days:
+            for item in getattr(group,day):
+                for i in range(1,7):
+                    if getattr(item,'lesson_'+ num2words(i))!=None or getattr(item,'lesson_'+ num2words(i)) > 0:
+                        lessons.append(Lessons.query.get(getattr(item,'lesson_'+ num2words(i))))
+        return lessons
 
 
 class Specialty(db.Model):
@@ -174,12 +185,13 @@ class Lessons(db.Model):
     @staticmethod
     def get_by_subject(subject_id):
         return Lessons.query.filter_by(subject_id=subject_id).all()
+
     @staticmethod
-    def get_id(subject_id,lecturer_id):
+    def get_id(subject_id, lecturer_id):
         id = None
-        if subject_id!=0 and lecturer_id!=0:
-                tmp = Lessons.query.filter(Lessons.subject_id == subject_id, Lessons.lecturer_id == lecturer_id).first()
-                id = tmp.id
+        if subject_id != 0 and lecturer_id != 0:
+            tmp = Lessons.query.filter(Lessons.subject_id == subject_id, Lessons.lecturer_id == lecturer_id).first()
+            id = tmp.id
         return id
 
     @staticmethod
@@ -217,7 +229,6 @@ class Subject(db.Model):
     @staticmethod
     def get_by_title(title):
         return Subject.query.filter_by(title=title).first()
-
 
     @staticmethod
     def get_by_substring(text):
@@ -316,19 +327,19 @@ class Day(object):
     id = db.Column(db.Integer, primary_key=True)
 
     @staticmethod
-    def add(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six):
-        db.session.add(Monday(week,group_id,lesson_one,lesson_two,lesson_three,lesson_four,lesson_five,lesson_six))
+    def add(week, group_id, lesson_one, lesson_two, lesson_three, lesson_four, lesson_five, lesson_six):
+        db.session.add(
+            Monday(week, group_id, lesson_one, lesson_two, lesson_three, lesson_four, lesson_five, lesson_six))
         db.session.commit()
 
     @classmethod
-    def update(cls,item):
+    def update(cls, item):
         db.session.add(item)
         db.session.commit()
 
     @classmethod
-    def get_by_group(cls,group_id):
-        return cls.query.filter(cls.group_id==group_id).all()
-
+    def get_by_group(cls, group_id):
+        return cls.query.filter(cls.group_id == group_id).all()
 
     @declared_attr
     def week(cls):
@@ -421,13 +432,23 @@ class Friday(Day, db.Model):
 class Saturday(Day, db.Model):
     pass
 
+
 class Replacement(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
-    group_id = db.Column(db.Integer,db.ForeignKey('group.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     start = db.Column(db.Date)
     start_lesson = db.Column(db.Integer)
-    start_subject = db.Column(db.Integer,db.ForeignKey('subject.id'))
+    start_subject_id = db.Column(db.Integer, db.ForeignKey('lessons.id'))
+    start_subject = db.relationship('Lessons',foreign_keys=[start_subject_id])
     finish = db.Column(db.Date)
     finish_lesson = db.Column(db.Integer)
-    finish_subject = db.Column(db.Integer,db.ForeignKey('subject.id'))
-    group = db.relationship('Group',backref ='replacement')
+    finish_subject_id = db.Column(db.Integer, db.ForeignKey('lessons.id'))
+    finish_subject = db.relationship('Lessons',foreign_keys=[finish_subject_id])
+    group = db.relationship('Group', backref='replacement')
+
+    @staticmethod
+    def add(group_id, start, start_lesson, start_subject_id, finish, finish_lesson, finish_subject_id):
+        item = Replacement(group_id=group_id, start=start, start_lesson=start_lesson, start_subject_id=start_subject_id,
+                        finish=finish, finish_lesson=finish_lesson, finish_subject_id=finish_subject_id)
+        db.session.add(item)
+        db.session.commit()

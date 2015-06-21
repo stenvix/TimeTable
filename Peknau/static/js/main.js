@@ -104,12 +104,11 @@ jQuery(document).ready(function () {
             jQuery.get("/admin/replacement/get", {group: jQuery('#group').val(), date: this.value})
                 .success(function (data) {
                     if( data.result.length > 0){
-                        jQuery('#finish_subject').html('');
+                        jQuery('#finish_lesson').html('');
                         jQuery.each(data.result,function(i,item){
-                            if (jQuery('#start_subject').val() != item.id && jQuery('#start_subject').val()!=0)
-                                jQuery('#finish_subject').append(new Option(item.value,item.id) ).trigger("chosen:updated");
-                            else{
-                                jQuery('#finish_subject').append(jQuery(new Option(item.value,item.id)).attr('disabled', true) ).trigger("chosen:updated");
+                            console.log(item);
+                            if (item.id < 0){
+                                jQuery('#finish_lesson').append(new Option(item.value,item.id*-1))
                             }
                         })
                     }
@@ -128,7 +127,9 @@ jQuery(document).ready(function () {
                         jQuery('#start_subject').html('');
                         jQuery.each(data.result,function(i,item){
                             if ( item.id > 0)
-                            jQuery('#start_subject').append(new Option(item.value,item.id)).trigger("chosen:updated");
+                                var oOption =  new Option(item.value,item.id);
+                                jQuery(oOption).attr('data-number',item.number);
+                            jQuery('#start_subject').append(oOption).trigger("chosen:updated");
                         })
                     }
                 }).error(function (data) {
@@ -140,4 +141,26 @@ jQuery(document).ready(function () {
         dateFormat: "dd-mm-yy",
         regional: "ru"
     });
+    jQuery('#start_subject').change(function(){
+        if (jQuery(this).val() > 0){
+             jQuery('#start_lesson').val(jQuery(this).find('option:selected').data('number'));
+        }
+    });
+
+    jQuery('#group').change(function(){
+        jQuery.get('/admin/replacement/get_group',{group:jQuery(this).val()}).success(function(data){
+            console.log(data);
+            jQuery('#finish_subject').html('');
+            if(data.result.length>0){
+                jQuery.each(data.result,function(i,item){
+                    jQuery('#finish_subject').append(new Option(item.value,item.id)).trigger("chosen:updated");
+                })
+                jQuery('#finish_subject').prop('selectedIndex',-1);
+            }
+        }).error(function(data){
+
+        })
+    });
+    jQuery('#finish_lesson').prop('selectedIndex',-1);
+    jQuery('#finish_subject').prop('selectedIndex',-1);
 });
