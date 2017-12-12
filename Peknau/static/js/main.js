@@ -46,6 +46,7 @@ jQuery(document).ready(function () {
         var tit = jQuery(this).attr('name') + '_lecturer';
         jQuery.get("/admin/rest/" + this.value)
             .success(function (data) {
+                console.log(data)
                 jQuery("select[name=" + tit + "][data-week=" + week + "] option").each(function (i, item) {
                     if (data.result.length != 0) {
                         jQuery.each(data.result, function (i, it) {
